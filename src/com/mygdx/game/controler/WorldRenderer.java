@@ -1,7 +1,7 @@
 package com.mygdx.game.controler;
 
 /**
- * Created by rxcai on 03/10/15.
+ * Created by thanh on 03/10/15.
  */
 
 
