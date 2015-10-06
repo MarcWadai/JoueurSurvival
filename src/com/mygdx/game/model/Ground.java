@@ -4,7 +4,7 @@ import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 
 /**
- * Created by rxcai on 03/10/15.
+ * Created by thanh on 03/10/15.
  */
 public class Ground {
 
