@@ -1,0 +1,2 @@
+<?xml version="1.0" encoding="utf-8"?>
+<merger version="3"><dataSet config="main"><source path="/Users/rxcai/Documents/game/android/assets"><file name="badlogic.jpg" path="/Users/rxcai/Documents/game/android/assets/badlogic.jpg"/><file name="images/rect.jpg" path="/Users/rxcai/Documents/game/android/assets/images/rect.jpg"/></source></dataSet><dataSet config="debug"><source path="/Users/rxcai/Documents/game/android/src/debug/assets"/></dataSet></merger>
