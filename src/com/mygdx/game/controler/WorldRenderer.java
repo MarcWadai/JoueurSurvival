@@ -10,11 +10,14 @@ package com.mygdx.game.controler;
     import com.badlogic.gdx.graphics.OrthographicCamera;
     import com.badlogic.gdx.graphics.Texture;
     import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+    import com.badlogic.gdx.graphics.g2d.TextureAtlas;
+    import com.badlogic.gdx.graphics.g2d.TextureRegion;
     import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
     import com.badlogic.gdx.graphics.glutils.ShapeRenderer.ShapeType;
     import com.badlogic.gdx.math.Rectangle;
     import com.badlogic.gdx.math.Vector2;
     import com.mygdx.game.model.Obstacle;
+    import com.mygdx.game.model.Player;
     import com.mygdx.game.view.World;
 
 
@@ -26,11 +29,12 @@ public class WorldRenderer {
     private static final float SPEED_OBSTACLE = 2;
     private static final float MOVING_RANGE = 0.05f;
     private final static  float OUT_RANGE = 15;
+    private static final float UNIT_SCALE = 1/16f;
 
     int timer = 0;
 
-
     private World world;
+    private Player player;
     private OrthographicCamera cam;
     private Obstacle obstacle;
     private Obstacle obstacle2;
@@ -40,6 +44,14 @@ public class WorldRenderer {
 
     /** for debug rendering **/
     ShapeRenderer debugRenderer = new ShapeRenderer();
+
+    /** Player textures **/
+    private TextureRegion playerIdleLeft;
+    private TextureRegion playerIdleRight;
+    private TextureRegion playerJumpLeft;
+    private TextureRegion playerJumpRight;
+    private TextureRegion playerFrame;
+
 
     /** Textures **/
     private Texture bobTexture;
@@ -79,6 +91,13 @@ public class WorldRenderer {
         debug = true;
         spriteBatch = new SpriteBatch();
         loadTextures();
+        player = new Player();
+        loadPlayerTextures();
+        //Gdx.input.setInputProcessor();
+
+        player.setPosition(new Vector2(3, 2));
+        player.setWidth(UNIT_SCALE * playerIdleRight.getRegionWidth());
+        player.setHeight(UNIT_SCALE * playerIdleRight.getRegionHeight());
     }
 
     private void loadTextures() {
@@ -93,6 +112,7 @@ public class WorldRenderer {
         spriteBatch.begin();
         drawBlocks();
         drawBob();
+        drawPlayer();
         spriteBatch.end();
         updateObstable();
 
@@ -128,14 +148,14 @@ public class WorldRenderer {
 
         float topObstacle1 = (obstacle.getPosition().y) + (Obstacle.SIZEHEIGHT);
         float bottomObstacle2 = (obstacle2.getPosition().y);
-        System.out.println( "test " +test.getPosition().y);
+        System.out.println( "player " +player.getPosition().y);
         System.out.println("obstacle 2 " +bottomObstacle2);
         System.out.println("obstacle " + topObstacle1);
         System.out.println(collide);
         //System.out.println();
-        if ( !(((test.getPosition().y)> (topObstacle1)) && ((test.getPosition().y) < (bottomObstacle2) ) )) {
-            if ((test.getPosition().x >(obstacle.getPosition().x - com.mygdx.game.model.Ground.SIZE) )) {
-                test.getPosition().x = obstacle.getPosition().x - com.mygdx.game.model.Ground.SIZE;
+        if ( !(((player.getPosition().y)> (topObstacle1)) && ((player.getPosition().y) < (bottomObstacle2) ) )) {
+            if ((player.getPosition().x >(obstacle.getPosition().x - com.mygdx.game.model.Ground.SIZE) )) {
+                player.setPosition(new Vector2((float)(obstacle.getPosition().x - com.mygdx.game.model.Ground.SIZE), (float)(player.getPosition().y)));
                 collide = true;
                 //  System.out.println("enter collision " );
             }
@@ -175,5 +195,41 @@ public class WorldRenderer {
         debugRenderer.setColor(new Color(0, 1, 0, 1));
         debugRenderer.rect(x1, y1, rect.width, rect.height);
         debugRenderer.end();
+    }
+
+    public void loadPlayerTextures(){
+        TextureAtlas atlas = new TextureAtlas(Gdx.files.internal("solbrain.pack"));
+        /* Standing */
+        playerIdleLeft = atlas.findRegion("1");
+
+        playerIdleRight = new TextureRegion(playerIdleLeft);
+        playerIdleRight.flip(true, false);
+
+        /* Jumping */
+        playerJumpLeft = atlas.findRegion("3");
+        playerJumpRight = new TextureRegion(playerJumpLeft);
+        playerJumpRight.flip(true, false);
+
+    }
+
+    public void drawPlayer(){
+
+        playerFrame = playerIdleRight;
+
+        if (player.getState() == Player.State.Jumping) {
+
+            playerFrame = player.isFacingRight() ? playerJumpRight : playerJumpLeft;
+
+        } else if (player.getState() == Player.State.Falling) {
+
+            playerFrame = player.isFacingRight() ? playerJumpRight : playerJumpLeft;
+
+        } else if (player.getState() == Player.State.Standing) {
+
+            playerFrame = player.isFacingRight() ? playerIdleRight : playerIdleLeft;
+
+        }
+
+        spriteBatch.draw(playerFrame, player.getPosition().x * ppuX, (com.mygdx.game.model.Ground.SIZE*ppuY), com.mygdx.game.model.Ground.SIZE * ppuX, com.mygdx.game.model.Ground.SIZE * ppuY);
     }
 }
