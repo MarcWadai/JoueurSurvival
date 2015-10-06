@@ -20,6 +20,7 @@ package com.mygdx.game.controler;
     import com.mygdx.game.model.Player;
     import com.mygdx.game.view.World;
 
+    import java.util.Random;
 
 
 public class WorldRenderer {
@@ -27,9 +28,14 @@ public class WorldRenderer {
     private static final float CAMERA_WIDTH = 10f;
     private static final float CAMERA_HEIGHT = 10f;
     private static final float SPEED_OBSTACLE = 2;
-    private static final float MOVING_RANGE = 0.05f;
+    private static final float MOVING_RANGE = 0.07f;
     private final static  float OUT_RANGE = 15;
+    private final static  float OUT_RANGE_X = 9;
     private static final float UNIT_SCALE = 1/16f;
+
+    Random random;
+    int obstacleSelect;
+    boolean finishTour = true;
 
     int timer = 0;
 
@@ -79,11 +85,12 @@ public class WorldRenderer {
         this.cam = new OrthographicCamera(CAMERA_WIDTH, CAMERA_HEIGHT);
         this.cam.position.set(CAMERA_WIDTH / 2f, CAMERA_HEIGHT / 2f, 0);
         this.cam.update();
-
+        random = new Random();
         obstacle = new Obstacle(new Vector2(10, 1),Obstacle.SIZEWIDTH,Obstacle.SIZEHEIGHT);
         // obstacle.bounds.set(obstacle.position.x, obstacle.position.y, Obstacle.SIZEWIDTH, Obstacle.SIZEHEIGHT);
         obstacle2Y = obstacle.getPosition().y +Obstacle.SIZEHEIGHT +  Obstacle.HOLE;
         obstacle2 = new Obstacle(new Vector2((float)10,obstacle2Y),Obstacle.SIZEWIDTH2, Obstacle.SIZEHEIGHT2);
+
         test = new Obstacle(new Vector2(3, (float) 4.3), com.mygdx.game.model.Ground.SIZE , com.mygdx.game.model.Ground.SIZE );
         test.getBounds().setX(3);
         test.getBounds().setWidth(com.mygdx.game.model.Ground.SIZE * ppuX);
@@ -95,7 +102,7 @@ public class WorldRenderer {
         loadPlayerTextures();
         //Gdx.input.setInputProcessor();
 
-        player.setPosition(new Vector2(3, 2));
+        player.setPosition(new Vector2(3, (float)4.3));
         player.setWidth(UNIT_SCALE * playerIdleRight.getRegionWidth());
         player.setHeight(UNIT_SCALE * playerIdleRight.getRegionHeight());
     }
@@ -108,11 +115,66 @@ public class WorldRenderer {
 
 
     public void render() {
-        collisionDetection();
+
+        obstacleSelect = random.nextInt(Obstacle.numberObstale)+1;
+        System.out.println("obstacle number " + obstacleSelect);
+
+        if ( finishTour) {
+                switch (obstacleSelect){
+                    case 1 :
+                        obstacle.getPosition().x = OUT_RANGE_X;
+                        obstacle2.getPosition().x = OUT_RANGE_X;
+                        obstacle.setHeight(Obstacle.OBSTACLE11_HEIGHT);
+                        obstacle2.setY(obstacle.getPosition().y +obstacle.getBounds().height +  Obstacle.HOLE);
+                        break;
+                    case 2 :
+                        obstacle.getPosition().x = OUT_RANGE_X;
+                        obstacle2.getPosition().x = OUT_RANGE_X;
+                        obstacle.setHeight(Obstacle.OBSTACLE12_HEIGHT);
+                        obstacle2.setY(obstacle.getPosition().y +obstacle.getBounds().height +  Obstacle.HOLE);
+                        break;
+                    case 3 :
+                        obstacle.getPosition().x = OUT_RANGE_X;
+                        obstacle2.getPosition().x = OUT_RANGE_X;
+                        obstacle.setHeight(Obstacle.OBSTACLE13_HEIGHT);
+                        obstacle2.setY(obstacle.getPosition().y +obstacle.getBounds().height +  Obstacle.HOLE);
+                        break;
+
+                    case 4 :
+                        obstacle.getPosition().x = OUT_RANGE_X;
+                        obstacle2.getPosition().x = OUT_RANGE_X;
+                        obstacle.setHeight(Obstacle.OBSTACLE14_HEIGHT);
+                        obstacle2.setY(obstacle.getPosition().y +obstacle.getBounds().height +  Obstacle.HOLE);
+                        break;
+
+                    case 5 :
+                        obstacle.getPosition().x = OUT_RANGE_X;
+                        obstacle2.getPosition().x = OUT_RANGE_X;
+                        obstacle.setHeight(Obstacle.OBSTACLE15_HEIGHT);
+                        obstacle2.setY(obstacle.getPosition().y +obstacle.getBounds().height +  Obstacle.HOLE);
+                        break;
+                    case 6 :
+                        obstacle.getPosition().x = OUT_RANGE_X;
+                        obstacle2.getPosition().x = OUT_RANGE_X;
+                        obstacle.setHeight(Obstacle.OBSTACLE16_HEIGHT);
+                        obstacle2.setY(obstacle.getPosition().y +obstacle.getBounds().height +  Obstacle.HOLE);
+                        break;
+                    case 7 :
+                        obstacle.getPosition().x = OUT_RANGE_X;
+                        obstacle2.getPosition().x = OUT_RANGE_X;
+                        obstacle.setHeight(Obstacle.OBSTACLE17_HEIGHT);
+                        obstacle2.setY(obstacle.getPosition().y +obstacle.getBounds().height +  Obstacle.HOLE);
+                        break;
+
+            }
+        }
+
+
+        //collisionDetection();
         spriteBatch.begin();
-        drawBlocks();
+        //drawBlocks();
         drawBob();
-        drawPlayer();
+        //drawPlayer();
         spriteBatch.end();
         updateObstable();
 
@@ -126,8 +188,9 @@ public class WorldRenderer {
 
         if ( !(obstacle.getPosition().x < 0 && collide)) {
             if (obstacle.getPosition().x < 0) {
-                obstacle.getPosition().x = 10;
-                obstacle2.getPosition().x = 10;
+                obstacle.getPosition().x = OUT_RANGE_X;
+                obstacle2.getPosition().x = OUT_RANGE_X;
+                finishTour = true;
             }
             else{
                 if (timer == SPEED_OBSTACLE) {
@@ -136,6 +199,7 @@ public class WorldRenderer {
                     obstacle2.getPosition().x = (float) obstacle2.getPosition().x - (float) MOVING_RANGE;
                     obstacle2.getBounds().x = (float) obstacle2.getPosition().x - (float) MOVING_RANGE;
                     timer = 0;
+                    finishTour = false;
                 }
             }
             timer++;
@@ -172,8 +236,8 @@ public class WorldRenderer {
 
     private void drawBob() {
 
-        spriteBatch.draw(bobTexture, obstacle.getPosition().x * ppuX, obstacle.getPosition().y * ppuY, Obstacle.SIZEWIDTH * ppuX, Obstacle.SIZEHEIGHT * ppuY);
-        spriteBatch.draw(bobTexture2, obstacle2.getPosition().x * ppuX, obstacle2.getPosition().y * ppuY, Obstacle.SIZEWIDTH2 * ppuX, Obstacle.SIZEHEIGHT2 * ppuY);
+        spriteBatch.draw(bobTexture, obstacle.getPosition().x * ppuX, obstacle.getPosition().y * ppuY, obstacle.getBounds().width * ppuX, obstacle.getBounds().height * ppuY);
+        spriteBatch.draw(bobTexture2, obstacle2.getPosition().x * ppuX, obstacle2.getPosition().y * ppuY, obstacle2.getBounds().width * ppuX, obstacle2.getBounds().height* ppuY);
     }
 
     private void drawDebug() {
