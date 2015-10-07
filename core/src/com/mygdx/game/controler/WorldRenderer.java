@@ -212,11 +212,6 @@ public class WorldRenderer {
 
         float topObstacle1 = (obstacle.getPosition().y) + (Obstacle.SIZEHEIGHT);
         float bottomObstacle2 = (obstacle2.getPosition().y);
-        System.out.println( "player " +player.getPosition().y);
-        System.out.println("obstacle 2 " +bottomObstacle2);
-        System.out.println("obstacle " + topObstacle1);
-        System.out.println(collide);
-        //System.out.println();
         if ( !(((player.getPosition().y)> (topObstacle1)) && ((player.getPosition().y) < (bottomObstacle2) ) )) {
             if ((player.getPosition().x >(obstacle.getPosition().x - com.mygdx.game.model.Ground.SIZE) )) {
                 player.setPosition(new Vector2((float)(obstacle.getPosition().x - com.mygdx.game.model.Ground.SIZE), (float)(player.getPosition().y)));

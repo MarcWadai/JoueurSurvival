@@ -13,7 +13,6 @@ public class MyGdxGame extends Game{
 		//batch = new SpriteBatch();
 		//img = new Texture("badlogic.jpg");
 		setScreen(new com.mygdx.game.view.GameScreen());
-
 	}
 /*
 	@Override
