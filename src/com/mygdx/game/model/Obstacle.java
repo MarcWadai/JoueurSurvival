@@ -21,7 +21,7 @@ package com.mygdx.game.model;
         public static final float SIZEHEIGHT2 = 6f; // half a unit
         public static final float SIZEWIDTH2 = 1f;
 
-        public final static float HOLE = 1.5f;
+        public final static float HOLE = 4f;
 
 
 

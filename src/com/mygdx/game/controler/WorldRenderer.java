@@ -6,6 +6,8 @@ package com.mygdx.game.controler;
 
 
     import com.badlogic.gdx.Gdx;
+    import com.badlogic.gdx.Input;
+    import com.badlogic.gdx.InputProcessor;
     import com.badlogic.gdx.graphics.Color;
     import com.badlogic.gdx.graphics.OrthographicCamera;
     import com.badlogic.gdx.graphics.Texture;
@@ -14,22 +16,28 @@ package com.mygdx.game.controler;
     import com.badlogic.gdx.graphics.g2d.TextureRegion;
     import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
     import com.badlogic.gdx.graphics.glutils.ShapeRenderer.ShapeType;
+    import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
     import com.badlogic.gdx.math.Rectangle;
     import com.badlogic.gdx.math.Vector2;
+    import com.badlogic.gdx.utils.Array;
+    import com.badlogic.gdx.utils.Pool;
     import com.mygdx.game.model.Obstacle;
     import com.mygdx.game.model.Player;
     import com.mygdx.game.view.World;
 
 
 
-public class WorldRenderer {
+public class WorldRenderer implements InputProcessor{
 
     private static final float CAMERA_WIDTH = 10f;
     private static final float CAMERA_HEIGHT = 10f;
-    private static final float SPEED_OBSTACLE = 2;
+    private static final float SPEED_OBSTACLE = 1;
     private static final float MOVING_RANGE = 0.05f;
     private final static  float OUT_RANGE = 15;
     private static final float UNIT_SCALE = 1/16f;
+    private static final long MAX_TIME_PRESS = 1000;
+    private static final long MIN_TIME_PRESS = 200;
+    private static final long TILEWIDTH = 1;
 
     int timer = 0;
 
@@ -52,6 +60,18 @@ public class WorldRenderer {
     private TextureRegion playerJumpRight;
     private TextureRegion playerFrame;
 
+    /** Jumping variables**/
+    private boolean isClicked = false;
+    private long pressTime = 0l;
+    private long releaseTime = 0l;
+    private long duration = 0l;
+    private boolean jumpingPressed;
+    private long timer1 = 0l;
+    private long timer2 = 0l;
+    private long timer3 = 0l;
+    private long timer4 = 0l;
+    private long timer5 = 0l;
+
 
     /** Textures **/
     private Texture bobTexture;
@@ -73,6 +93,14 @@ public class WorldRenderer {
         ppuY = (float)height / CAMERA_HEIGHT;
     }
 
+    private Array<Rectangle> tiles;
+
+    private Pool<Rectangle> rectPool = new Pool<Rectangle>() {
+        @Override
+        protected Rectangle newObject () {
+            return new Rectangle();
+        }
+    };
 
     public WorldRenderer(World world) {
         this.world = world;
@@ -93,9 +121,11 @@ public class WorldRenderer {
         loadTextures();
         player = new Player();
         loadPlayerTextures();
-        //Gdx.input.setInputProcessor();
+        Gdx.input.setInputProcessor(this);
+        tiles = new Array<Rectangle>();
+        tiles = world.getTile();
 
-        player.setPosition(new Vector2(3, 2));
+        player.setPosition(new Vector2(3, (float)4.2));
         player.setWidth(UNIT_SCALE * playerIdleRight.getRegionWidth());
         player.setHeight(UNIT_SCALE * playerIdleRight.getRegionHeight());
     }
@@ -107,17 +137,138 @@ public class WorldRenderer {
     }
 
 
-    public void render() {
+    public void render(float delta) {
         collisionDetection();
         spriteBatch.begin();
-        drawBlocks();
+        //drawBlocks();
         drawBob();
         drawPlayer();
         spriteBatch.end();
         updateObstable();
+        updatePlayer(delta);
+        player.update(delta);
 
         if (debug)
             drawDebug();
+    }
+
+    public void updatePlayer(float delta) {
+        if (delta == 0) return;
+
+        if(player.getState() != Player.State.Falling && player.getState() != Player.State.Standing){
+            if(player.getVelocity().y < 0){
+                player.setState(Player.State.Falling);
+                player.setGrounded(false);
+
+            }
+        }
+
+        player.getAcceleration().y = Player.GRAVITY;
+        player.getAcceleration().scl(delta);
+        player.getVelocity().add(player.getAcceleration().x, player.getAcceleration().y);
+
+        // clamp the velocity to the maximum, x-axis only
+        if (Math.abs(player.getVelocity().x) > Player.MAX_VELOCITY) {
+            player.getVelocity().x = Math.signum(player.getVelocity().x) * Player.MAX_VELOCITY;
+        }
+
+        // clamp the velocity to 0 if it's < 1, and set the state to standing
+        if (Math.abs(player.getVelocity().x) < 1) {
+            player.getVelocity().x = 0;
+            if (player.isGrounded()) {
+                player.setState(Player.State.Standing);
+            }
+        }
+
+        player.getVelocity().scl(delta);
+
+        // perform collision detection & response, on each axis, separately
+        // if the koala is moving right, check the tiles to the right of it's
+        // right bounding box edge, otherwise check the ones to the left
+        Rectangle playerRect = rectPool.obtain();
+        playerRect.set(player.getPosition().x, player.getPosition().y + player.getHeight()*0.1f, player.getWidth(), player.getHeight());
+
+        int startX, startY, endX, endY;
+        if (player.getVelocity().x > 0) {
+            startX = endX = (int)(player.getPosition().x + player.getWidth() + player.getVelocity().x);
+        } else {
+            startX = endX = (int)(player.getPosition().x + player.getVelocity().x);
+        }
+
+        startY = (int)(player.getPosition().y);
+        endY = (int)(player.getPosition().y + player.getHeight());
+        getTiles(startX, startY, endX, endY, tiles);
+
+        playerRect.x += player.getVelocity().x;
+
+        if(tiles != null) {
+            for (Rectangle tile : tiles) {
+
+                if (playerRect.overlaps(tile)) {
+
+                    if (player.getVelocity().x > 0) {
+                        player.getPosition().x = tile.x - TILEWIDTH - TILEWIDTH * 0.40f;
+                    } else if (player.getVelocity().x < 0) {
+                        player.getPosition().x = tile.x + TILEWIDTH + TILEWIDTH * 0.05f;
+                    }
+
+                    player.getVelocity().x = 0;
+
+                    break;
+                }
+            }
+        }
+
+        //playerRect.x = player.getPosition().x;
+        playerRect.set(player.getPosition().x, player.getPosition().y, player.getWidth(), player.getHeight());
+
+        // if the koala is moving upwards, check the tiles to the top of it's
+        // top bounding box edge, otherwise check the ones to the bottom
+        if (player.getVelocity().y > 0) {
+            startY = endY = (int)(player.getPosition().y + player.getHeight() + player.getVelocity().y);
+        } else {
+            startY = endY = (int)(player.getPosition().y + player.getVelocity().y);
+        }
+
+        startX = (int)(player.getPosition().x);
+        endX = (int)(player.getPosition().x + player.getWidth());
+        getTiles(startX, startY, endX, endY, tiles);
+        playerRect.y += player.getVelocity().y;
+        if(tiles != null) {
+            for (Rectangle tile : tiles) {
+                if (playerRect.overlaps(tile)) {
+                    // we actually reset the koala y-position here
+                    // so it is just below/above the tile we collided with
+                    // this removes bouncing :)
+                    if (player.getVelocity().y > 0) {
+                        player.getVelocity().y = tile.y - player.getHeight();
+                        // we hit a block jumping upwards, let's destroy it!
+                        //					TiledMapTileLayer layer = (TiledMapTileLayer)level.getMap().getLayers().get(1);
+                        //					layer.setCell((int)tile.x, (int)tile.y, null);
+                    } else {
+                        player.getPosition().y = tile.y + tile.height;
+                        // if we hit the ground, mark us as grounded so we can jump
+                        player.setGrounded(true);
+                    }
+                    player.getVelocity().y = 0;
+                    break;
+                }
+            }
+        }
+        rectPool.free(playerRect);
+
+        // unscale the velocity by the inverse delta time and set
+        // the latest position
+
+        player.getPosition().add(player.getVelocity());
+
+        player.getVelocity().scl(1 / delta);
+
+        player.getVelocity().x *= Player.DAMPING;
+    }
+
+    private void getTiles (int startX, int startY, int endX, int endY, Array<Rectangle> tiles) {
+
     }
 
 
@@ -155,8 +306,10 @@ public class WorldRenderer {
         //System.out.println();
         if ( !(((player.getPosition().y)> (topObstacle1)) && ((player.getPosition().y) < (bottomObstacle2) ) )) {
             if ((player.getPosition().x >(obstacle.getPosition().x - com.mygdx.game.model.Ground.SIZE) )) {
-                player.setPosition(new Vector2((float)(obstacle.getPosition().x - com.mygdx.game.model.Ground.SIZE), (float)(player.getPosition().y)));
-                collide = true;
+                if (player.isGrounded()) {
+                    player.setPosition(new Vector2((float) (obstacle.getPosition().x - com.mygdx.game.model.Ground.SIZE), (float) (player.getPosition().y)));
+                    collide = true;
+                }
                 //  System.out.println("enter collision " );
             }
         }
@@ -230,6 +383,78 @@ public class WorldRenderer {
 
         }
 
-        spriteBatch.draw(playerFrame, player.getPosition().x * ppuX, (com.mygdx.game.model.Ground.SIZE*ppuY), com.mygdx.game.model.Ground.SIZE * ppuX, com.mygdx.game.model.Ground.SIZE * ppuY);
+        spriteBatch.draw(playerFrame, player.getPosition().x * ppuX, (player.getPosition().y*ppuY), com.mygdx.game.model.Ground.SIZE * ppuX, com.mygdx.game.model.Ground.SIZE * ppuY);
+    }
+
+    @Override
+    public boolean keyDown(int keycode) {
+        return false;
+    }
+
+    @Override
+    public boolean keyUp(int keycode) {
+        return false;
+    }
+
+    @Override
+    public boolean keyTyped(char character) {
+        return false;
+    }
+
+    @Override
+    public boolean touchDown(int screenX, int screenY, int pointer, int button) {
+        pressTime = System.currentTimeMillis();
+        timer1 = pressTime + (MAX_TIME_PRESS/5);
+        timer2 = timer1 + (MAX_TIME_PRESS/5);
+        timer3 = timer2 + (MAX_TIME_PRESS/5);
+        timer4 = timer3 + (MAX_TIME_PRESS/5);
+        timer5 = timer4 + (MAX_TIME_PRESS/5);
+
+        if (isClicked == false && player.isGrounded()){
+            isClicked = true;
+            jumpingPressed = true;
+        }
+        return true;
+    }
+
+    @Override
+    public boolean touchUp(int screenX, int screenY, int pointer, int button) {
+        if (player.isGrounded()){
+            if (isClicked == true){
+                releaseTime = System.currentTimeMillis();
+                isClicked = false;
+            }
+            duration = releaseTime - pressTime;
+            player.setGrounded(false);
+            player.setState(Player.State.Jumping);
+
+            if (jumpingPressed == true) {
+                if (duration >= MAX_TIME_PRESS){
+                    player.getVelocity().y = Player.MAX_JUMP_SPEED;
+                } else if (duration <= MIN_TIME_PRESS) {
+                    player.getVelocity().y = ((float)MIN_TIME_PRESS/MAX_TIME_PRESS) * Player.MAX_JUMP_SPEED;
+                } else {
+                    player.getVelocity().y = ((float)duration/MAX_TIME_PRESS) * Player.MAX_JUMP_SPEED;
+                }
+                jumpingPressed = false;
+            }
+        }
+
+        return true;
+    }
+
+    @Override
+    public boolean touchDragged(int screenX, int screenY, int pointer) {
+        return false;
+    }
+
+    @Override
+    public boolean mouseMoved(int screenX, int screenY) {
+        return false;
+    }
+
+    @Override
+    public boolean scrolled(int amount) {
+        return false;
     }
 }
