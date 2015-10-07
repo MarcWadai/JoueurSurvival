@@ -33,11 +33,9 @@ public class World {
 
     private void createDemoWorld() {
         bob = new Obstacle(new Vector2(9, 1), 0, 0);
-        System.out.println("hello tile ");
         for (int i = 0; i < 30; i++) {
             blocks.add(new com.mygdx.game.model.Ground(new Vector2(i, 0)));
             tile.add(new Rectangle((float) i, (float)0, Ground.SIZE, Ground.SIZE ));
-            System.out.println("tile ");
         }
 
 

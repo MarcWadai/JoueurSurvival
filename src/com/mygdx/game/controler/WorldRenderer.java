@@ -299,12 +299,12 @@ public class WorldRenderer implements InputProcessor{
 
         float topObstacle1 = (obstacle.getPosition().y) + (Obstacle.SIZEHEIGHT);
         float bottomObstacle2 = (obstacle2.getPosition().y);
-        System.out.println( "player " +player.getPosition().y);
-        System.out.println("obstacle 2 " +bottomObstacle2);
-        System.out.println("obstacle " + topObstacle1);
-        System.out.println(collide);
+        //System.out.println( "player " +player.getPosition().y);
+        //System.out.println("obstacle 2 " +bottomObstacle2);
+        //System.out.println("obstacle " + topObstacle1);
+        //System.out.println(collide);
         //System.out.println();
-        if ( !(((player.getPosition().y)> (topObstacle1)) && ((player.getPosition().y) < (bottomObstacle2) ) )) {
+        /*if ( !(((player.getPosition().y)> (topObstacle1)) && ((player.getPosition().y) < (bottomObstacle2) ) )) {
             if ((player.getPosition().x >(obstacle.getPosition().x - com.mygdx.game.model.Ground.SIZE) )) {
                 if (player.isGrounded()) {
                     player.setPosition(new Vector2((float) (obstacle.getPosition().x - com.mygdx.game.model.Ground.SIZE), (float) (player.getPosition().y)));
@@ -312,6 +312,22 @@ public class WorldRenderer implements InputProcessor{
                 }
                 //  System.out.println("enter collision " );
             }
+        }*/
+
+        if ((player.getPosition().x >= (obstacle.getPosition().x - Obstacle.SIZEWIDTH)
+                && player.getPosition().x <= obstacle.getPosition().x
+                && player.getPosition().y >= obstacle.getPosition().y
+                && player.getPosition().y <= (Obstacle.SIZEHEIGHT + obstacle.getPosition().y))
+
+                || (player.getPosition().x > (obstacle2.getPosition().x - Obstacle.SIZEWIDTH2)
+                && player.getPosition().x < obstacle2.getPosition().x
+                && player.getPosition().y > obstacle2.getPosition().y
+                && player.getPosition().y < (Obstacle.SIZEHEIGHT2 + obstacle2.getPosition().y))){
+
+            player.setPosition(new Vector2((float) (obstacle.getPosition().x - com.mygdx.game.model.Ground.SIZE), (float) (player.getPosition().y)));
+            collide = true;
+            System.out.println("collision");
+
         }
         else {
             //System.out.println("didnt enter collision");
