@@ -33,16 +33,16 @@ public class WorldRenderer implements InputProcessor{
 
     private static final float CAMERA_WIDTH = 10f;
     private static final float CAMERA_HEIGHT = 10f;
-    private static final float SPEED_OBSTACLE = 1;
+    private static final float SPEED_OBSTACLE = 2;
     private static final float MOVING_RANGE = 0.07f;
     private final static  float OUT_RANGE = 15;
     private final static  float OUT_RANGE_X = 9;
-    private static final float UNIT_SCALE = 1/20f;
+    private static final float UNIT_SCALE = 1/25f;
     private static final long MAX_TIME_PRESS = 1000;
     private static final long MIN_TIME_PRESS = 200;
     private static final long TILEWIDTH = 1;
 
-    int timer = 0;
+    float timer = 0;
 
     private World world;
     private Player player;
@@ -86,7 +86,7 @@ public class WorldRenderer implements InputProcessor{
     private Texture blockTexture;
 
     private SpriteBatch spriteBatch;
-    private boolean debug = false;
+    private boolean debug = true;
     private int width;
     private int height;
     private float ppuX;	// pixels per unit on the X axis
@@ -133,7 +133,7 @@ public class WorldRenderer implements InputProcessor{
         tiles = new Array<Rectangle>();
         tiles = world.getTile();
 
-        player.setPosition(new Vector2(3, (float)4.3));
+        player.setPosition(new Vector2(1, Ground.SIZE));
         player.setWidth(UNIT_SCALE * playerIdleRight.getRegionWidth());
         player.setHeight(UNIT_SCALE * playerIdleRight.getRegionHeight());
     }
@@ -148,7 +148,7 @@ public class WorldRenderer implements InputProcessor{
     public void render(float delta) {
 
         obstacleSelect = random.nextInt(Obstacle.numberObstale)+1;
-        System.out.println("obstacle number " + obstacleSelect);
+      //  System.out.println("obstacle number " + obstacleSelect);
 
         if ( finishTour) {
             switch (obstacleSelect){
@@ -204,11 +204,11 @@ public class WorldRenderer implements InputProcessor{
         spriteBatch.begin();
         //drawBlocks();
         drawBob();
-        //drawPlayer();
+        drawPlayer();
         spriteBatch.end();
         updateObstable();
-        //updatePlayer(delta);
-        //player.update(delta);
+        updatePlayer(delta);
+        player.update(delta);
 
         if (debug)
             drawDebug();
@@ -216,6 +216,11 @@ public class WorldRenderer implements InputProcessor{
 
     public void updatePlayer(float delta) {
         if (delta == 0) return;
+
+        if(collide == true){
+            player.setVelocity(new Vector2(0,0));
+            return;
+        }
 
         if(player.getState() != Player.State.Falling && player.getState() != Player.State.Standing){
             if(player.getVelocity().y < 0){
@@ -343,8 +348,9 @@ public class WorldRenderer implements InputProcessor{
                 obstacle2.getPosition().x = OUT_RANGE_X;
                 finishTour = true;
             }
-            else{
-                if (timer == SPEED_OBSTACLE) {
+            else {
+                 if (timer == SPEED_OBSTACLE) {
+                if (collide != true) {
                     obstacle.getPosition().x = (float) obstacle.getPosition().x - (float) MOVING_RANGE;
                     obstacle.getBounds().x = (float) obstacle.getPosition().x - (float) MOVING_RANGE;
                     obstacle2.getPosition().x = (float) obstacle2.getPosition().x - (float) MOVING_RANGE;
@@ -353,6 +359,7 @@ public class WorldRenderer implements InputProcessor{
                     finishTour = false;
                 }
             }
+            }
             timer++;
         }
 
@@ -360,8 +367,11 @@ public class WorldRenderer implements InputProcessor{
     }
 
     public void collisionDetection(){
+        //System.out.println(player.getPosition().x);
 
-        float topObstacle1 = (obstacle.getPosition().y) + (Obstacle.SIZEHEIGHT);
+        float topObstacle1 = (obstacle.getPosition().x) + (Obstacle.SIZEWIDTH);
+
+        //System.out.println(topObstacle1);
         float bottomObstacle2 = (obstacle2.getPosition().y);
         //System.out.println( "player " +player.getPosition().y);
         //System.out.println("obstacle 2 " +bottomObstacle2);
@@ -379,16 +389,18 @@ public class WorldRenderer implements InputProcessor{
         }*/
 
         if ((player.getPosition().x >= (obstacle.getPosition().x - player.getWidth())
-                && player.getPosition().x <= (obstacle.getPosition().x + Obstacle.SIZEWIDTH)
+                && player.getPosition().x < (obstacle.getPosition().x + Obstacle.SIZEWIDTH)
                 && player.getPosition().y >= obstacle.getPosition().y
-                && (player.getPosition().y) <= (Obstacle.SIZEHEIGHT + obstacle.getPosition().y))
+                && (player.getPosition().y) < (obstacle.getBounds().getHeight() + obstacle.getPosition().y))
 
                 || (player.getPosition().x >= (obstacle2.getPosition().x - player.getWidth())
-                && player.getPosition().x <= (obstacle2.getPosition().x + Obstacle.SIZEWIDTH2)
+                && player.getPosition().x <= (obstacle2.getPosition().x + obstacle2.getBounds().getWidth())
                 && (player.getPosition().y + player.getHeight())>= obstacle2.getPosition().y)){
 
             player.setPosition(new Vector2((float) (obstacle.getPosition().x - player.getWidth()), (float) (player.getPosition().y)));
             collide = true;
+            System.out.println("Joueur x= " + (player.getPosition().x + player.getWidth()) + "  y= " + player.getPosition().y);
+            System.out.println("Cube x= " + obstacle.getPosition().x + "  y= " + obstacle.getPosition().y );
 
             if ((player.getPosition().x >= (obstacle2.getPosition().x - player.getWidth())
                     && player.getPosition().x <= (obstacle2.getPosition().x + Obstacle.SIZEWIDTH2)
@@ -429,6 +441,15 @@ public class WorldRenderer implements InputProcessor{
         float y1 = bob.getPosition().y + rect.y;
         debugRenderer.setColor(new Color(0, 1, 0, 1));
         debugRenderer.rect(x1, y1, rect.width, rect.height);
+        //debugRenderer.end();
+
+        //debugRenderer.begin(ShapeType.Line);
+
+        Rectangle rect2 = new Rectangle(0, 0, player.getWidth(), player.getHeight());
+        float xx1 = player.getPosition().x + rect2.x;
+        float yy1 = player.getPosition().y + rect2.y;
+        debugRenderer.setColor(new Color(1, 1, 1, 1));
+        debugRenderer.rect(xx1, yy1, rect2.width, rect2.height);
         debugRenderer.end();
     }
 
