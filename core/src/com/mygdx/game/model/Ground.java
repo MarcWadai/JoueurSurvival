@@ -2,9 +2,10 @@ package com.mygdx.game.model;
 
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.utils.Array;
 
 /**
- * Created by rxcai on 03/10/15.
+ * Created by thanh on 03/10/15.
  */
 public class Ground {
 
@@ -12,6 +13,7 @@ public class Ground {
 
     private Vector2 position = new Vector2();
     private Rectangle bounds = new Rectangle();
+
 
     public Ground(Vector2 pos) {
         this.position = pos;
@@ -26,4 +28,6 @@ public class Ground {
     public Rectangle getBounds(){
         return this.bounds;
     }
+
+
 }

@@ -29,7 +29,7 @@ public class GameScreen implements Screen{
         Gdx.gl.glClearColor(0.1f, 1f, 0.5f, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
-        worldRenderer.render();
+        worldRenderer.render(delta);
     }
 
     public void resize(int width, int height) {
