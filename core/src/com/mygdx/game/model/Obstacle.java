@@ -16,12 +16,12 @@ package com.mygdx.game.model;
         public static final float SPEED = 2f;	// unit per second
         public static final float JUMP_VELOCITY = 1f;
         public static final float SIZEHEIGHT = 3f; // half a unit
-        public static final float SIZEWIDTH = 1f;
+        public static final float SIZEWIDTH = 0.5f;
 
-        public static final float SIZEHEIGHT2 = 8f; // half a unit
-        public static final float SIZEWIDTH2 = 1f;
+        public static final float SIZEHEIGHT2 = 6f; // half a unit
+        public static final float SIZEWIDTH2 = 0.5f;
 
-        public final static float HOLE = 1.5f;
+        public final static float HOLE = 6f;
 
         public static final float OBSTACLE11_HEIGHT = 1f;
         public static final float OBSTACLE12_HEIGHT = 2f;
@@ -35,6 +35,7 @@ package com.mygdx.game.model;
         public static final int numberObstale = 7;
 
 
+
         private Vector2 	position = new Vector2();
         Vector2 	acceleration = new Vector2();
         Vector2 	velocity = new Vector2();
@@ -46,7 +47,6 @@ package com.mygdx.game.model;
             this.bounds.height = height;
             this.bounds.width = width;
         }
-
 
         public Vector2 getPosition(){
            return this.position;
@@ -67,7 +67,6 @@ package com.mygdx.game.model;
         public void setHeight(float heightO){
             this.bounds.height = heightO;
         }
-
 
         public Rectangle getBounds(){
             return this.bounds;
