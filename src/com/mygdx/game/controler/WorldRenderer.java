@@ -35,7 +35,7 @@ public class WorldRenderer implements InputProcessor{
     private static final float SPEED_OBSTACLE = 1;
     private static final float MOVING_RANGE = 0.05f;
     private final static  float OUT_RANGE = 15;
-    private static final float UNIT_SCALE = 1/16f;
+    private static final float UNIT_SCALE = 1/20f;
     private static final long MAX_TIME_PRESS = 1000;
     private static final long MIN_TIME_PRESS = 200;
     private static final long TILEWIDTH = 1;
@@ -403,7 +403,7 @@ public class WorldRenderer implements InputProcessor{
 
         }
 
-        spriteBatch.draw(playerFrame, player.getPosition().x * ppuX, (player.getPosition().y*ppuY), com.mygdx.game.model.Ground.SIZE * ppuX, com.mygdx.game.model.Ground.SIZE * ppuY);
+        spriteBatch.draw(playerFrame, player.getPosition().x * ppuX, player.getPosition().y*ppuY, player.getWidth() * ppuX, player.getHeight() * ppuY);
     }
 
     @Override
