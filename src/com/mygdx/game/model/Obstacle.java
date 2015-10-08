@@ -16,10 +16,10 @@ package com.mygdx.game.model;
         public static final float SPEED = 2f;	// unit per second
         public static final float JUMP_VELOCITY = 1f;
         public static final float SIZEHEIGHT = 3f; // half a unit
-        public static final float SIZEWIDTH = 1f;
+        public static final float SIZEWIDTH = 0.5f;
 
         public static final float SIZEHEIGHT2 = 6f; // half a unit
-        public static final float SIZEWIDTH2 = 1f;
+        public static final float SIZEWIDTH2 = 0.5f;
 
         public final static float HOLE = 4f;
 

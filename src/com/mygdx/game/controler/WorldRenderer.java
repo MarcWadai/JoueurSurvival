@@ -21,6 +21,7 @@ package com.mygdx.game.controler;
     import com.badlogic.gdx.math.Vector2;
     import com.badlogic.gdx.utils.Array;
     import com.badlogic.gdx.utils.Pool;
+    import com.mygdx.game.model.Ground;
     import com.mygdx.game.model.Obstacle;
     import com.mygdx.game.model.Player;
     import com.mygdx.game.view.World;
@@ -147,6 +148,7 @@ public class WorldRenderer implements InputProcessor{
         updateObstable();
         updatePlayer(delta);
         player.update(delta);
+        //System.out.println(player.getPosition().y);
 
         if (debug)
             drawDebug();
@@ -314,19 +316,21 @@ public class WorldRenderer implements InputProcessor{
             }
         }*/
 
-        if ((player.getPosition().x >= (obstacle.getPosition().x - Obstacle.SIZEWIDTH)
-                && player.getPosition().x <= obstacle.getPosition().x
+        if ((player.getPosition().x >= (obstacle.getPosition().x - player.getWidth())
+                && player.getPosition().x <= (obstacle.getPosition().x + Obstacle.SIZEWIDTH)
                 && player.getPosition().y >= obstacle.getPosition().y
-                && player.getPosition().y <= (Obstacle.SIZEHEIGHT + obstacle.getPosition().y))
+                && (player.getPosition().y) <= (Obstacle.SIZEHEIGHT + obstacle.getPosition().y))
 
-                || (player.getPosition().x > (obstacle2.getPosition().x - Obstacle.SIZEWIDTH2)
-                && player.getPosition().x < obstacle2.getPosition().x
-                && player.getPosition().y > obstacle2.getPosition().y
-                && player.getPosition().y < (Obstacle.SIZEHEIGHT2 + obstacle2.getPosition().y))){
+                || (player.getPosition().x >= (obstacle2.getPosition().x - player.getWidth())
+                && player.getPosition().x <= (obstacle2.getPosition().x + Obstacle.SIZEWIDTH2)
+                && (player.getPosition().y + player.getHeight())>= obstacle2.getPosition().y)){
 
-            player.setPosition(new Vector2((float) (obstacle.getPosition().x - com.mygdx.game.model.Ground.SIZE), (float) (player.getPosition().y)));
+            player.setPosition(new Vector2((float) (obstacle.getPosition().x - player.getWidth()), (float) (player.getPosition().y)));
             collide = true;
-            System.out.println("collision");
+
+            if ((player.getPosition().x >= (obstacle2.getPosition().x - player.getWidth())
+                    && player.getPosition().x <= (obstacle2.getPosition().x + Obstacle.SIZEWIDTH2)
+                    && (player.getPosition().y + player.getHeight())>= obstacle2.getPosition().y)) System.out.println("collision2");
 
         }
         else {
