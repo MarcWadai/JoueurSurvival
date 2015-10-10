@@ -21,9 +21,11 @@ package com.mygdx.game.controler;
     import com.badlogic.gdx.math.Vector2;
     import com.badlogic.gdx.utils.Array;
     import com.badlogic.gdx.utils.Pool;
+    import com.mygdx.game.MyGdxGame;
     import com.mygdx.game.model.Ground;
     import com.mygdx.game.model.Obstacle;
     import com.mygdx.game.model.Player;
+    import com.mygdx.game.view.GameScreen;
     import com.mygdx.game.view.World;
     import java.util.Random;
 
@@ -41,8 +43,10 @@ public class WorldRenderer implements InputProcessor{
     private static final long MAX_TIME_PRESS = 1000;
     private static final long MIN_TIME_PRESS = 200;
     private static final long TILEWIDTH = 1;
-
     float timer = 0;
+
+    GameScreen gameScreen;
+
 
     private World world;
     private Player player;
@@ -93,6 +97,8 @@ public class WorldRenderer implements InputProcessor{
     private float ppuY;	// pixels per unit on the Y axis
     private float obstacle2Y;
 
+
+
     public void setSize (int w, int h) {
         this.width = w;
         this.height = h;
@@ -109,7 +115,9 @@ public class WorldRenderer implements InputProcessor{
         }
     };
 
-    public WorldRenderer(World world) {
+    public WorldRenderer(World world, GameScreen gameScreen) {
+        this.gameScreen = gameScreen;
+
         this.world = world;
         this.cam = new OrthographicCamera(CAMERA_WIDTH, CAMERA_HEIGHT);
         this.cam.position.set(CAMERA_WIDTH / 2f, CAMERA_HEIGHT / 2f, 0);
@@ -136,6 +144,7 @@ public class WorldRenderer implements InputProcessor{
         player.setPosition(new Vector2(1, Ground.SIZE));
         player.setWidth(UNIT_SCALE * playerIdleRight.getRegionWidth());
         player.setHeight(UNIT_SCALE * playerIdleRight.getRegionHeight());
+
     }
 
     private void loadTextures() {
@@ -200,6 +209,11 @@ public class WorldRenderer implements InputProcessor{
             }
         }
 
+        // show the game over screen
+        if (collide){
+            gameScreen.setSate(GameScreen.GAME_OVER);
+        }
+
         collisionDetection();
         spriteBatch.begin();
         //drawBlocks();
@@ -213,6 +227,9 @@ public class WorldRenderer implements InputProcessor{
         if (debug)
             drawDebug();
     }
+
+
+
 
     public void updatePlayer(float delta) {
         if (delta == 0) return;
@@ -486,7 +503,7 @@ public class WorldRenderer implements InputProcessor{
 
         }
 
-        spriteBatch.draw(playerFrame, player.getPosition().x * ppuX, player.getPosition().y*ppuY, player.getWidth() * ppuX, player.getHeight() * ppuY);
+        spriteBatch.draw(playerFrame, player.getPosition().x * ppuX, player.getPosition().y * ppuY, player.getWidth() * ppuX, player.getHeight() * ppuY);
     }
 
     @Override
@@ -560,4 +577,6 @@ public class WorldRenderer implements InputProcessor{
     public boolean scrolled(int amount) {
         return false;
     }
+
+
 }
