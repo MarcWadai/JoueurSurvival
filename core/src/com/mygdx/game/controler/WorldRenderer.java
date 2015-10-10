@@ -462,11 +462,10 @@ public class WorldRenderer implements InputProcessor{
 
         //debugRenderer.begin(ShapeType.Line);
 
-        Rectangle rect2 = new Rectangle(0, 0, player.getWidth(), player.getHeight());
-        float xx1 = player.getPosition().x + rect2.x;
-        float yy1 = player.getPosition().y + rect2.y;
+        float xx1 = player.getPosition().x + gameScreen.getPauseBounds().x;
+        float yy1 = player.getPosition().y + gameScreen.getPauseBounds().y;
         debugRenderer.setColor(new Color(1, 1, 1, 1));
-        debugRenderer.rect(xx1, yy1, rect2.width, rect2.height);
+        debugRenderer.rect(xx1, yy1, gameScreen.getPauseBounds().width, gameScreen.getPauseBounds().height);
         debugRenderer.end();
     }
 
@@ -523,17 +522,30 @@ public class WorldRenderer implements InputProcessor{
 
     @Override
     public boolean touchDown(int screenX, int screenY, int pointer, int button) {
-        pressTime = System.currentTimeMillis();
-        timer1 = pressTime + (MAX_TIME_PRESS/5);
-        timer2 = timer1 + (MAX_TIME_PRESS/5);
-        timer3 = timer2 + (MAX_TIME_PRESS/5);
-        timer4 = timer3 + (MAX_TIME_PRESS/5);
-        timer5 = timer4 + (MAX_TIME_PRESS/5);
-
-        if (isClicked == false && player.isGrounded()){
-            isClicked = true;
-            jumpingPressed = true;
+        if (gameScreen.getPauseBounds().contains(screenX, screenY)) {
+            gameScreen.setSate(gameScreen.GAME_PAUSED);
+            System.out.println("Game PAUSE");
         }
+        else if (gameScreen.getState() == gameScreen.GAME_OVER && gameScreen.getPauseMenuBounds().contains(screenX,screenY)){
+            gameScreen.setSate(gameScreen.GAME_RESTART);
+            System.out.println("Game RESTART");
+        }
+            pressTime = System.currentTimeMillis();
+            timer1 = pressTime + (MAX_TIME_PRESS / 5);
+            timer2 = timer1 + (MAX_TIME_PRESS / 5);
+            timer3 = timer2 + (MAX_TIME_PRESS / 5);
+            timer4 = timer3 + (MAX_TIME_PRESS / 5);
+            timer5 = timer4 + (MAX_TIME_PRESS / 5);
+
+            if (isClicked == false && player.isGrounded()) {
+                isClicked = true;
+                jumpingPressed = true;
+            }
+
+        System.out.println("x:"+screenX+", y:"+screenY);
+        System.out.println("xbound:"+gameScreen.getPauseMenuBounds().x+", ybound:"+gameScreen.getPauseMenuBounds().y);
+
+
         return true;
     }
 
