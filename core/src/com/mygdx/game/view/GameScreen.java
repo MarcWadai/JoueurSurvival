@@ -2,13 +2,21 @@ package com.mygdx.game.view;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputProcessor;
+import com.badlogic.gdx.Preferences;
 import com.badlogic.gdx.ScreenAdapter;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
+import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector3;
+import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.mygdx.game.Assets;
 import com.mygdx.game.MyGdxGame;
 import com.mygdx.game.controler.WorldRenderer;
+import com.mygdx.game.model.Obstacle;
+import com.mygdx.game.model.ScoreLabel;
 
 
 /**
@@ -30,12 +38,33 @@ public class GameScreen extends ScreenAdapter{
     int state ;
     int game_over = 0;
 
+    ShapeRenderer debugRenderer;
+
+    // Score and best score
+    ScoreLabel scoreLabel;
+    BitmapFont bitmapFont;
+    Preferences preference;
+    boolean enterSave = false;
+
     public GameScreen(MyGdxGame myGdxGame){
         this.myGdxGame = myGdxGame;
         state = GAME_RUNNING;
         touchPoint =new Vector3();
         pauseBounds = new Rectangle(64, 64, 64, 64);
-        pauseMenuBounds = new Rectangle(165, 700, 300, 100);
+        pauseMenuBounds = new Rectangle(165, 700, 400, 100);
+        bitmapFont = new BitmapFont(Gdx.files.internal("images/fontscore.fnt"),Gdx.files.internal("images/fontscore.png"),false);
+        Label.LabelStyle style = new Label.LabelStyle(bitmapFont, Color.WHITE);
+        //scoreLabel =new ScoreLabel("Score", style);
+
+        if(preference == null) {
+            preference = Gdx.app.getPreferences("preferencesJoueur");
+            preference.clear();
+            preference.flush();
+            preference.putInteger("score", 3);
+            preference.putBoolean("hey", true);
+            System.out.println("prefernce initial " + preference.getInteger("score") + ", bool " + preference.getBoolean("hey"));
+            System.out.println("pref ini "+Gdx.app.getPreferences("preferencesJoueur"));
+        }
 
     }
 
@@ -44,6 +73,8 @@ public class GameScreen extends ScreenAdapter{
     public void show() {
         world = new World();
         worldRenderer = new WorldRenderer(world, this);
+        worldRenderer.setScore(0);
+
     }
 
 
@@ -55,10 +86,19 @@ public class GameScreen extends ScreenAdapter{
         draw();
         myGdxGame.batcher.end();
 
+
         switch (state) {
 
             case GAME_RUNNING:
                 worldRenderer.render(delta);
+                int score = worldRenderer.getScore() - 3;
+                myGdxGame.batcher.begin();
+                bitmapFont.draw(myGdxGame.batcher, String.valueOf(score), 2 * worldRenderer.getppux(), 4 * worldRenderer.getppuy());
+            //    if (preference.contains("score")) {
+                    bitmapFont.draw(myGdxGame.batcher, String.valueOf(preference.getInteger("score")), 3 * worldRenderer.getppux(), 4 * worldRenderer.getppuy());
+                    System.out.println("prefernce " + preference.getInteger("score"));
+              //  }
+                myGdxGame.batcher.end();
                 break;
             case GAME_PAUSED:
                 myGdxGame.batcher.begin();
@@ -66,11 +106,19 @@ public class GameScreen extends ScreenAdapter{
                 myGdxGame.batcher.end();
                 break;
             case GAME_OVER:
+                worldRenderer.render(delta);
                 myGdxGame.batcher.begin();
                 presentGameOver();
                 myGdxGame.batcher.end();
+                if (enterSave == false) {
+                    if (preference.getInteger("score") < worldRenderer.getScore() - 3) {
+                        saveBestScore();
+                    }
+                    enterSave = true;
+                }
                 break;
             case GAME_RESTART :
+                enterSave = false;
                 myGdxGame.setScreen(new GameScreen(myGdxGame));
                 System.out.println("restart in game screen");
                 break;
@@ -81,28 +129,18 @@ public class GameScreen extends ScreenAdapter{
 
     }
 
+    public void saveBestScore(){
+        //if (preference.contains("score") == false){
+            int s = worldRenderer.getScore()-3;
+            preference.putInteger("score",s);
+            System.out.println("actual score "+s);
+            System.out.println("saving the score, before there was no score "+preference.getInteger("score"));
+
+        //}
+    }
+
     public void resize(int width, int height) {
         worldRenderer.setSize(width, height);
-    }
-
-    @Override
-    public void pause() {
-
-    }
-
-    @Override
-    public void resume() {
-
-    }
-
-    @Override
-    public void hide() {
-
-    }
-
-    @Override
-    public void dispose() {
-
     }
 
     public void draw(){
@@ -150,5 +188,14 @@ public class GameScreen extends ScreenAdapter{
     }
 
 
+    private void drawDebug() {
+        // render blocks
+       /* debugRenderer.setProjectionMatrix(myGdxGame.combined);
+        debugRenderer.begin(ShapeRenderer.ShapeType.Line);
+
+        debugRenderer.setColor(new Color(0, 0, 0, 1));
+        debugRenderer.rect(pauseMenuBounds.x, pauseMenuBounds.y, pauseMenuBounds.width, pauseMenuBounds.height);
+        debugRenderer.end();*/
+    }
 
 }

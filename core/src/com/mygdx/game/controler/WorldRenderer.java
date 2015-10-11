@@ -60,6 +60,8 @@ public class WorldRenderer implements InputProcessor{
     Random random;
     int obstacleSelect;
     boolean finishTour = true;
+    int score = 0 ;
+
 
     /** for debug rendering **/
     ShapeRenderer debugRenderer = new ShapeRenderer();
@@ -144,6 +146,7 @@ public class WorldRenderer implements InputProcessor{
         player.setPosition(new Vector2(1, Ground.SIZE));
         player.setWidth(UNIT_SCALE * playerIdleRight.getRegionWidth());
         player.setHeight(UNIT_SCALE * playerIdleRight.getRegionHeight());
+        score = 0 ;
 
     }
 
@@ -205,8 +208,15 @@ public class WorldRenderer implements InputProcessor{
                     obstacle.setHeight(Obstacle.OBSTACLE17_HEIGHT);
                     obstacle2.setY(obstacle.getPosition().y +obstacle.getBounds().height +  Obstacle.HOLE);
                     break;
+                case 8 :
+                    obstacle.getPosition().x = OUT_RANGE_X;
+                    obstacle2.getPosition().x = OUT_RANGE_X;
+                    obstacle.setHeight(Obstacle.OBSTACLE11_HEIGHT);
+                    obstacle2.setY(obstacle.getPosition().y +obstacle.getBounds().height +  3*Obstacle.HOLE );
+                    break;
 
             }
+            score++;
         }
 
         // show the game over screen
@@ -379,8 +389,6 @@ public class WorldRenderer implements InputProcessor{
             }
             timer++;
         }
-
-
     }
 
     public void collisionDetection(){
@@ -464,7 +472,7 @@ public class WorldRenderer implements InputProcessor{
 
         float xx1 = player.getPosition().x + gameScreen.getPauseBounds().x;
         float yy1 = player.getPosition().y + gameScreen.getPauseBounds().y;
-        debugRenderer.setColor(new Color(1, 1, 1, 1));
+        debugRenderer.setColor(new Color(0, 0, 0, 1));
         debugRenderer.rect(xx1, yy1, gameScreen.getPauseBounds().width, gameScreen.getPauseBounds().height);
         debugRenderer.end();
     }
@@ -530,6 +538,10 @@ public class WorldRenderer implements InputProcessor{
             gameScreen.setSate(gameScreen.GAME_RESTART);
             System.out.println("Game RESTART");
         }
+        else if (gameScreen.getState() == gameScreen.GAME_PAUSED && gameScreen.getPauseMenuBounds().contains(screenX,screenY)){
+            gameScreen.setSate(GameScreen.GAME_RUNNING);
+        }
+        else {
             pressTime = System.currentTimeMillis();
             timer1 = pressTime + (MAX_TIME_PRESS / 5);
             timer2 = timer1 + (MAX_TIME_PRESS / 5);
@@ -541,7 +553,7 @@ public class WorldRenderer implements InputProcessor{
                 isClicked = true;
                 jumpingPressed = true;
             }
-
+        }
         System.out.println("x:"+screenX+", y:"+screenY);
         System.out.println("xbound:"+gameScreen.getPauseMenuBounds().x+", ybound:"+gameScreen.getPauseMenuBounds().y);
 
@@ -590,5 +602,20 @@ public class WorldRenderer implements InputProcessor{
         return false;
     }
 
+    public float getppux(){
+        return ppuX;
+    }
+
+    public float getppuy(){
+        return ppuY;
+    }
+
+    public int getScore(){
+        return score;
+    }
+
+    public void setScore(int score){
+        this.score = score;
+    }
 
 }

@@ -21,7 +21,7 @@ package com.mygdx.game.model;
         public static final float SIZEHEIGHT2 = 6f; // half a unit
         public static final float SIZEWIDTH2 = 0.5f;
 
-        public final static float HOLE = 4f;
+        public final static float HOLE = 3f;
 
         public static final float OBSTACLE11_HEIGHT = 1f;
         public static final float OBSTACLE12_HEIGHT = 2f;
@@ -32,7 +32,7 @@ package com.mygdx.game.model;
         public static final float OBSTACLE17_HEIGHT = 7f;
 
 
-        public static final int numberObstale = 7;
+        public static final int numberObstale = 8;
 
 
 
