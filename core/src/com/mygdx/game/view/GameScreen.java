@@ -58,7 +58,6 @@ public class GameScreen extends ScreenAdapter{
 
         if(preference == null) {
             preference = Gdx.app.getPreferences("preferencesJoueur");
-            preference.clear();
             preference.flush();
             preference.putInteger("score", 3);
             preference.putBoolean("hey", true);
@@ -133,6 +132,7 @@ public class GameScreen extends ScreenAdapter{
         //if (preference.contains("score") == false){
             int s = worldRenderer.getScore()-3;
             preference.putInteger("score",s);
+            preference.flush();
             System.out.println("actual score "+s);
             System.out.println("saving the score, before there was no score "+preference.getInteger("score"));
 
