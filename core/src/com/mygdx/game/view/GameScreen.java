@@ -61,8 +61,8 @@ public class GameScreen extends ScreenAdapter{
             preference.flush();
             preference.putInteger("score", 3);
             preference.putBoolean("hey", true);
-            System.out.println("prefernce initial " + preference.getInteger("score") + ", bool " + preference.getBoolean("hey"));
-            System.out.println("pref ini "+Gdx.app.getPreferences("preferencesJoueur"));
+            //System.out.println("prefernce initial " + preference.getInteger("score") + ", bool " + preference.getBoolean("hey"));
+            //System.out.println("pref ini "+Gdx.app.getPreferences("preferencesJoueur"));
         }
 
     }
@@ -95,7 +95,7 @@ public class GameScreen extends ScreenAdapter{
                 bitmapFont.draw(myGdxGame.batcher, String.valueOf(score), 2 * worldRenderer.getppux(), 4 * worldRenderer.getppuy());
             //    if (preference.contains("score")) {
                     bitmapFont.draw(myGdxGame.batcher, String.valueOf(preference.getInteger("score")), 3 * worldRenderer.getppux(), 4 * worldRenderer.getppuy());
-                    System.out.println("prefernce " + preference.getInteger("score"));
+                    //System.out.println("prefernce " + preference.getInteger("score"));
               //  }
                 myGdxGame.batcher.end();
                 break;

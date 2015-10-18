@@ -39,9 +39,10 @@ public class WorldRenderer implements InputProcessor{
     private static final float MOVING_RANGE = 0.07f;
     private final static  float OUT_RANGE = 15;
     private final static  float OUT_RANGE_X = 9;
-    private static final float UNIT_SCALE = 1/25f;
+    private static final float UNIT_SCALE = 1/400f;
     private static final long MAX_TIME_PRESS = 1000;
     private static final long MIN_TIME_PRESS = 200;
+    private static final long MAX_TIME_JUMP = 2000;
     private static final long TILEWIDTH = 1;
     float timer = 0;
 
@@ -72,18 +73,26 @@ public class WorldRenderer implements InputProcessor{
     private TextureRegion playerJumpLeft;
     private TextureRegion playerJumpRight;
     private TextureRegion playerFrame;
+    private TextureRegion playerFall;
+    private TextureRegion playerFall1;
+    private TextureRegion playerFall2;
+    private TextureRegion playerJump1;
+    private TextureRegion playerJump2;
+    private TextureRegion playerJump3;
+    private TextureRegion playerCrying;
 
     /** Jumping variables**/
     private boolean isClicked = false;
     private long pressTime = 0l;
+    private long currentTime = 0l;
     private long releaseTime = 0l;
     private long duration = 0l;
     private boolean jumpingPressed;
     private long timer1 = 0l;
     private long timer2 = 0l;
     private long timer3 = 0l;
-    private long timer4 = 0l;
-    private long timer5 = 0l;
+    //private long timer4 = 0l;
+    //private long timer5 = 0l;
 
 
     /** Textures **/
@@ -236,6 +245,37 @@ public class WorldRenderer implements InputProcessor{
 
         if (debug)
             drawDebug();
+
+        /* Touch down animation */
+        currentTime = System.currentTimeMillis();
+        if (Gdx.input.isTouched() && player.isGrounded()) {
+            if (currentTime < timer1){
+                player.setState(Player.State.Falling);
+                //System.out.println("fall");
+            } else if (currentTime >= timer1 && currentTime < timer2){
+                player.setState(Player.State.Falling1);
+                //System.out.println("fall1");
+            } else if (currentTime >= timer2 && currentTime < timer3){
+                player.setState(Player.State.Falling2);
+                //System.out.println("fall2");
+            }
+        }
+
+        /* Touch up animation */
+        if (!player.isGrounded() && player.getState() == Player.State.Jumping) {
+            if (currentTime >= timer3 && currentTime < (timer3 + (MAX_TIME_JUMP/4))) {
+                player.setState(Player.State.Jumping);
+            } else if (currentTime >= (timer3 + (MAX_TIME_PRESS/4)) && currentTime < (timer3 + 2*(MAX_TIME_JUMP/4))) {
+                player.setState(Player.State.Jumping3);
+            } else if (currentTime >= (timer3 + 2*(MAX_TIME_PRESS/4)) && currentTime < (timer3 + 3*(MAX_TIME_JUMP/4))) {
+                player.setState(Player.State.Jumping3);
+            } else if (currentTime >= (timer3 + 3*(MAX_TIME_PRESS/4)) && currentTime < (timer3 + MAX_TIME_JUMP)) {
+                player.setState(Player.State.Jumping3);
+            }
+        }
+
+        //System.out.println(player.getState());
+
     }
 
 
@@ -269,7 +309,7 @@ public class WorldRenderer implements InputProcessor{
         // clamp the velocity to 0 if it's < 1, and set the state to standing
         if (Math.abs(player.getVelocity().x) < 1) {
             player.getVelocity().x = 0;
-            if (player.isGrounded()) {
+            if (player.isGrounded() && !Gdx.input.isTouched()) {
                 player.setState(Player.State.Standing);
             }
         }
@@ -422,14 +462,12 @@ public class WorldRenderer implements InputProcessor{
                 && player.getPosition().x <= (obstacle2.getPosition().x + obstacle2.getBounds().getWidth())
                 && (player.getPosition().y + player.getHeight())>= obstacle2.getPosition().y)){
 
-            player.setPosition(new Vector2((float) (obstacle.getPosition().x - player.getWidth()), (float) (player.getPosition().y)));
+            player.setPosition(new Vector2((float) (player.getPosition().x), (float) (player.getPosition().y)));
+            player.setState(Player.State.Crying);
             collide = true;
-            System.out.println("Joueur x= " + (player.getPosition().x + player.getWidth()) + "  y= " + player.getPosition().y);
-            System.out.println("Cube x= " + obstacle.getPosition().x + "  y= " + obstacle.getPosition().y );
+            //System.out.println("Joueur x= " + (player.getPosition().x + player.getWidth()) + "  y= " + player.getPosition().y);
+            //System.out.println("Cube x= " + obstacle.getPosition().x + "  y= " + obstacle.getPosition().y );
 
-            if ((player.getPosition().x >= (obstacle2.getPosition().x - player.getWidth())
-                    && player.getPosition().x <= (obstacle2.getPosition().x + Obstacle.SIZEWIDTH2)
-                    && (player.getPosition().y + player.getHeight())>= obstacle2.getPosition().y)) System.out.println("collision2");
 
         }
         else {
@@ -478,7 +516,7 @@ public class WorldRenderer implements InputProcessor{
     }
 
     public void loadPlayerTextures(){
-        TextureAtlas atlas = new TextureAtlas(Gdx.files.internal("solbrain.pack"));
+        TextureAtlas atlas = new TextureAtlas(Gdx.files.internal("poop.pack"));
         /* Standing */
         playerIdleLeft = atlas.findRegion("1");
 
@@ -486,9 +524,20 @@ public class WorldRenderer implements InputProcessor{
         playerIdleRight.flip(true, false);
 
         /* Jumping */
-        playerJumpLeft = atlas.findRegion("3");
+        playerJumpLeft = atlas.findRegion("5");
         playerJumpRight = new TextureRegion(playerJumpLeft);
         playerJumpRight.flip(true, false);
+        playerJump1 = atlas.findRegion("6");
+        playerJump2 = atlas.findRegion("7");
+        playerJump3 = atlas.findRegion("8");
+
+        /* Falling */
+        playerFall = atlas.findRegion("2");
+        playerFall1 = atlas.findRegion("3");
+        playerFall2 = atlas.findRegion("4");
+
+        /* Crying */
+        playerCrying = atlas.findRegion("9");
 
     }
 
@@ -502,11 +551,35 @@ public class WorldRenderer implements InputProcessor{
 
         } else if (player.getState() == Player.State.Falling) {
 
-            playerFrame = player.isFacingRight() ? playerJumpRight : playerJumpLeft;
+            playerFrame = playerFall;
 
         } else if (player.getState() == Player.State.Standing) {
 
             playerFrame = player.isFacingRight() ? playerIdleRight : playerIdleLeft;
+
+        } else if (player.getState() == Player.State.Falling1) {
+
+            playerFrame = playerFall1;
+
+        } else if (player.getState() == Player.State.Falling2) {
+
+            playerFrame = playerFall2;
+
+        } else if (player.getState() == Player.State.Jumping1) {
+
+            playerFrame = playerJump1;
+
+        } else if (player.getState() == Player.State.Jumping2) {
+
+            playerFrame = playerJump2;
+
+        } else if (player.getState() == Player.State.Jumping3) {
+
+            playerFrame = playerJump3;
+
+        } else if (player.getState() == Player.State.Crying) {
+
+            playerFrame = playerCrying;
 
         }
 
@@ -543,11 +616,11 @@ public class WorldRenderer implements InputProcessor{
         }
         else {
             pressTime = System.currentTimeMillis();
-            timer1 = pressTime + (MAX_TIME_PRESS / 5);
-            timer2 = timer1 + (MAX_TIME_PRESS / 5);
-            timer3 = timer2 + (MAX_TIME_PRESS / 5);
-            timer4 = timer3 + (MAX_TIME_PRESS / 5);
-            timer5 = timer4 + (MAX_TIME_PRESS / 5);
+            timer1 = pressTime + (MAX_TIME_PRESS / 3);
+            timer2 = timer1 + (MAX_TIME_PRESS / 3);
+            timer3 = timer2 + (MAX_TIME_PRESS / 3);
+            //timer4 = timer3 + (MAX_TIME_PRESS / 5);
+            //timer5 = timer4 + (MAX_TIME_PRESS / 5);
 
             if (isClicked == false && player.isGrounded()) {
                 isClicked = true;
@@ -555,7 +628,7 @@ public class WorldRenderer implements InputProcessor{
             }
         }
         System.out.println("x:"+screenX+", y:"+screenY);
-        System.out.println("xbound:"+gameScreen.getPauseMenuBounds().x+", ybound:"+gameScreen.getPauseMenuBounds().y);
+        System.out.println("xbound:" + gameScreen.getPauseMenuBounds().x + ", ybound:" + gameScreen.getPauseMenuBounds().y);
 
 
         return true;

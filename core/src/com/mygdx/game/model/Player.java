@@ -13,7 +13,7 @@ public class Player {
     public static final float MAX_JUMP_SPEED   = 6.2f;//10
 
     public enum State {
-        Standing, Walking, Jumping, Falling
+        Standing, Walking, Jumping, Jumping1, Jumping2, Jumping3, Falling, Falling1, Falling2, Crying
     }
 
     private State state;

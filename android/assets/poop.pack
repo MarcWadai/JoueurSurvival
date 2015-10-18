@@ -1,0 +1,73 @@
+
+poop.png
+format: RGBA8888
+filter: Nearest,Nearest
+repeat: none
+1
+  rotate: false
+  xy: 1, 777
+  size: 431, 238
+  orig: 431, 238
+  offset: 0, 0
+  index: -1
+8
+  rotate: false
+  xy: 1, 537
+  size: 431, 238
+  orig: 431, 238
+  offset: 0, 0
+  index: -1
+2
+  rotate: false
+  xy: 434, 759
+  size: 400, 256
+  orig: 400, 256
+  offset: 0, 0
+  index: -1
+7
+  rotate: false
+  xy: 1, 279
+  size: 400, 256
+  orig: 400, 256
+  offset: 0, 0
+  index: -1
+3
+  rotate: false
+  xy: 1, 1
+  size: 364, 276
+  orig: 364, 276
+  offset: 0, 0
+  index: -1
+9
+  rotate: false
+  xy: 434, 519
+  size: 389, 238
+  orig: 389, 238
+  offset: 0, 0
+  index: -1
+6
+  rotate: false
+  xy: 403, 241
+  size: 364, 276
+  orig: 364, 276
+  offset: 0, 0
+  index: -1
+
+poop2.png
+format: RGBA8888
+filter: Nearest,Nearest
+repeat: none
+4
+  rotate: false
+  xy: 1, 1
+  size: 329, 276
+  orig: 329, 276
+  offset: 0, 0
+  index: -1
+5
+  rotate: false
+  xy: 332, 1
+  size: 329, 276
+  orig: 329, 276
+  offset: 0, 0
+  index: -1
