@@ -4,6 +4,7 @@ package com.mygdx.game.model;
  * Created by rxcai on 03/10/15.
  */
 
+    import com.badlogic.gdx.graphics.Texture;
     import com.badlogic.gdx.math.Rectangle;
     import com.badlogic.gdx.math.Vector2;
 
@@ -36,11 +37,11 @@ package com.mygdx.game.model;
 
 
 
-        private Vector2 	position = new Vector2();
-        Vector2 	acceleration = new Vector2();
-        Vector2 	velocity = new Vector2();
-        private Rectangle 	bounds = new Rectangle();
-        State		state = State.IDLE;
+
+
+        private Vector2 position = new Vector2();
+        private Rectangle bounds = new Rectangle();
+        private Texture obstacleTexture;
 
         public Obstacle(Vector2 position, float width,float height) {
             this.position = position;
@@ -70,5 +71,9 @@ package com.mygdx.game.model;
 
         public Rectangle getBounds(){
             return this.bounds;
+        }
+
+        public void setObstacleTexture(Texture texture){
+            obstacleTexture = texture;
         }
     }

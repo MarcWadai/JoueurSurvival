@@ -1,7 +1,6 @@
 package com.mygdx.game.view;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.Preferences;
 import com.badlogic.gdx.ScreenAdapter;
 import com.badlogic.gdx.graphics.Color;
@@ -10,12 +9,10 @@ import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector3;
-import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.mygdx.game.Assets;
 import com.mygdx.game.MyGdxGame;
 import com.mygdx.game.controler.WorldRenderer;
-import com.mygdx.game.model.Obstacle;
 import com.mygdx.game.model.ScoreLabel;
 
 
@@ -70,7 +67,7 @@ public class GameScreen extends ScreenAdapter{
 
     @Override
     public void show() {
-        world = new World();
+        world = new World(myGdxGame.batcher);
         worldRenderer = new WorldRenderer(world, this);
         worldRenderer.setScore(0);
 
@@ -79,11 +76,8 @@ public class GameScreen extends ScreenAdapter{
 
     @Override
     public void render(float delta) {
-        Gdx.gl.glClearColor(0.1f, 1f, 0.5f, 1);
+       // Gdx.gl.glClearColor(0.1f, 1f, 0.5f, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
-        myGdxGame.batcher.begin();
-        draw();
-        myGdxGame.batcher.end();
 
 
         switch (state) {
@@ -92,6 +86,7 @@ public class GameScreen extends ScreenAdapter{
                 worldRenderer.render(delta);
                 int score = worldRenderer.getScore() - 3;
                 myGdxGame.batcher.begin();
+                draw();
                 bitmapFont.draw(myGdxGame.batcher, String.valueOf(score), 2 * worldRenderer.getppux(), 4 * worldRenderer.getppuy());
             //    if (preference.contains("score")) {
                     bitmapFont.draw(myGdxGame.batcher, String.valueOf(preference.getInteger("score")), 3 * worldRenderer.getppux(), 4 * worldRenderer.getppuy());
