@@ -1,0 +1,73 @@
+
+paper.png
+format: RGBA8888
+filter: Nearest,Nearest
+repeat: none
+paper1
+  rotate: false
+  xy: 1, 1
+  size: 200, 857
+  orig: 200, 857
+  offset: 0, 0
+  index: -1
+paper2
+  rotate: false
+  xy: 203, 1
+  size: 200, 857
+  orig: 200, 857
+  offset: 0, 0
+  index: -1
+paper3
+  rotate: false
+  xy: 405, 1
+  size: 200, 857
+  orig: 200, 857
+  offset: 0, 0
+  index: -1
+paper4
+  rotate: false
+  xy: 607, 1
+  size: 200, 857
+  orig: 200, 857
+  offset: 0, 0
+  index: -1
+paper5
+  rotate: false
+  xy: 809, 1
+  size: 200, 857
+  orig: 200, 857
+  offset: 0, 0
+  index: -1
+
+paper2.png
+format: RGBA8888
+filter: Nearest,Nearest
+repeat: none
+paper6
+  rotate: false
+  xy: 1, 1
+  size: 200, 857
+  orig: 200, 857
+  offset: 0, 0
+  index: -1
+paper7
+  rotate: false
+  xy: 203, 1
+  size: 200, 857
+  orig: 200, 857
+  offset: 0, 0
+  index: -1
+paper8
+  rotate: false
+  xy: 405, 1
+  size: 200, 857
+  orig: 200, 857
+  offset: 0, 0
+  index: -1
+paper9
+  rotate: false
+  xy: 607, 1
+  size: 200, 857
+  orig: 200, 857
+  offset: 0, 0
+  index: -1

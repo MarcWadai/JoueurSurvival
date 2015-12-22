@@ -7,8 +7,9 @@ package com.mygdx.game.model;
     import com.badlogic.gdx.graphics.Texture;
     import com.badlogic.gdx.math.Rectangle;
     import com.badlogic.gdx.math.Vector2;
+    import com.mygdx.game.Assets;
 
-    public class Obstacle {
+public class Obstacle {
 
         public enum State {
             IDLE, WALKING, JUMPING, DYING
@@ -16,21 +17,26 @@ package com.mygdx.game.model;
 
         public static final float SPEED = 2f;	// unit per second
         public static final float JUMP_VELOCITY = 1f;
-        public static final float SIZEHEIGHT = 3f; // half a unit
-        public static final float SIZEWIDTH = 0.5f;
+        public static final float textureFillParameterWidth = 1.5f;
+        public static final float textureFillParameterHeight = 1.2f;
+        public static final float textureFillParameterX = 1f;
+        public static final float textureFillParameterY = 0.2f;
+        public static final float SIZEHEIGHT = (Assets.obstacleBackground11.getHeight())/100f; // half a unit, 100 because the image size is ..
+        public static final float SIZEWIDTH = 1f;//(Assets.obstacleBackground11.getWidth() )/100f;
+
 
         public static final float SIZEHEIGHT2 = 6f; // half a unit
         public static final float SIZEWIDTH2 = 0.5f;
 
         public final static float HOLE = 3f;
 
-        public static final float OBSTACLE11_HEIGHT = 1f;
-        public static final float OBSTACLE12_HEIGHT = 2f;
-        public static final float OBSTACLE13_HEIGHT = 3f;
-        public static final float OBSTACLE14_HEIGHT = 4f;
-        public static final float OBSTACLE15_HEIGHT = 5f;
-        public static final float OBSTACLE16_HEIGHT = 6f;
-        public static final float OBSTACLE17_HEIGHT = 7f;
+        public static final float OBSTACLE11_HEIGHT = Assets.obstacleBackground11.getHeight()/100f;
+        public static final float OBSTACLE12_HEIGHT = Assets.obstacleBackground12.getHeight()/100f;
+        public static final float OBSTACLE13_HEIGHT = Assets.obstacleBackground13.getHeight()/100f;
+        public static final float OBSTACLE14_HEIGHT = Assets.obstacleBackground14.getHeight()/100f;
+        public static final float OBSTACLE15_HEIGHT = Assets.obstacleBackground15.getHeight()/100f;
+        public static final float OBSTACLE16_HEIGHT = Assets.obstacleBackground16.getHeight()/100f;
+        public static final float OBSTACLE17_HEIGHT = Assets.obstacleBackground17.getHeight()/100f;
 
 
         public static final int numberObstale = 8;

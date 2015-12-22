@@ -76,9 +76,10 @@ public class GameScreen extends ScreenAdapter{
 
     @Override
     public void render(float delta) {
-       // Gdx.gl.glClearColor(0.1f, 1f, 0.5f, 1);
-        Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
+        super.render(delta);
+        Gdx.gl.glClearColor(0.1f, 1f, 0.5f, 1);
+        Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
         switch (state) {
 
@@ -88,10 +89,8 @@ public class GameScreen extends ScreenAdapter{
                 myGdxGame.batcher.begin();
                 draw();
                 bitmapFont.draw(myGdxGame.batcher, String.valueOf(score), 2 * worldRenderer.getppux(), 4 * worldRenderer.getppuy());
-            //    if (preference.contains("score")) {
-                    bitmapFont.draw(myGdxGame.batcher, String.valueOf(preference.getInteger("score")), 3 * worldRenderer.getppux(), 4 * worldRenderer.getppuy());
-                    //System.out.println("prefernce " + preference.getInteger("score"));
-              //  }
+                bitmapFont.draw(myGdxGame.batcher, String.valueOf(preference.getInteger("score")), 3 * worldRenderer.getppux(), 4 * worldRenderer.getppuy());
+
                 myGdxGame.batcher.end();
                 break;
             case GAME_PAUSED:

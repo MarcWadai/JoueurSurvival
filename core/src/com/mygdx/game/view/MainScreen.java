@@ -103,6 +103,7 @@ public class MainScreen extends ScreenAdapter{
 
     @Override
     public void render (float delta) {
+        super.render(delta);
         update();
         draw();
     }
