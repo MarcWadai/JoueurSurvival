@@ -578,21 +578,17 @@ public class WorldRenderer implements InputProcessor{
             gameScreen.setSate(GameScreen.GAME_RUNNING);
         }
         else {
-            pressTime = System.currentTimeMillis();
-            timer1 = pressTime + (MAX_TIME_PRESS / 3);
-            timer2 = timer1 + (MAX_TIME_PRESS / 3);
-            timer3 = timer2 + (MAX_TIME_PRESS / 3);
-            //timer4 = timer3 + (MAX_TIME_PRESS / 5);
-            //timer5 = timer4 + (MAX_TIME_PRESS / 5);
-
             if (isClicked == false && player.isGrounded()) {
+                pressTime = System.currentTimeMillis();
+                timer1 = pressTime + (MAX_TIME_PRESS / 3);
+                timer2 = timer1 + (MAX_TIME_PRESS / 3);
+                timer3 = timer2 + (MAX_TIME_PRESS / 3);
+                //timer4 = timer3 + (MAX_TIME_PRESS / 5);
+                //timer5 = timer4 + (MAX_TIME_PRESS / 5);
                 isClicked = true;
                 jumpingPressed = true;
             }
         }
-        System.out.println("x:"+screenX+", y:"+screenY);
-        System.out.println("xbound:" + gameScreen.getPauseMenuBounds().x + ", ybound:" + gameScreen.getPauseMenuBounds().y);
-
 
         return true;
     }
