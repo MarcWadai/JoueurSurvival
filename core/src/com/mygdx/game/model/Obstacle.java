@@ -39,7 +39,7 @@ public class Obstacle {
         public static final float OBSTACLE17_HEIGHT = Assets.obstacleBackground17.getHeight()/100f;
 
 
-        public static final int numberObstale = 8;
+        public static final int numberObstale = 7;
 
 
 
