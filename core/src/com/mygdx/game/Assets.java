@@ -55,7 +55,7 @@ public class Assets {
     public static void load () {
 
         items = loadTexture("images/items.png");
-        menu = loadTexture("images/menu.png");
+        menu = loadTexture("images/menu2.png");
         background2 = loadTexture("images/bckgrnd2.png");
         toilet1 = loadTexture("images/play.png");
         toilet2 = loadTexture("images/scores.png");
