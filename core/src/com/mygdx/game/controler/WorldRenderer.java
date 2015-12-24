@@ -34,10 +34,8 @@ public class WorldRenderer implements InputProcessor{
     private static final float CAMERA_HEIGHT = 10f;
     private static final float SPEED_OBSTACLE = 2;
     private static final float MOVING_RANGE = 0.085f;//0.07f;
-    private final static  float OUT_RANGE = 15;
     private final static  float OUT_RANGE_X = 9;
     private static final float UNIT_SCALE = 1/400f;
-    private static final float UNIT_SCALE_PAPER = 1/10f;
     private static final long MAX_TIME_PRESS = 1000;
     private static final long MIN_TIME_PRESS = 200;
     private static final long MAX_TIME_JUMP = 2000;
@@ -65,7 +63,6 @@ public class WorldRenderer implements InputProcessor{
     /** Obstacle and collision variables**/
     private Obstacle obstacle;
     private Obstacle obstacle2;
-    private Obstacle test;
     private Boolean collide = false;
     Random random;
     int obstacleSelect;
@@ -90,22 +87,6 @@ public class WorldRenderer implements InputProcessor{
     private TextureRegion playerJump3;
     private TextureRegion playerCrying;
 
-    /** Obstacle texture **/
-    private TextureRegion paperTexture1;
-    private TextureRegion paperTexture2;
-    private TextureRegion paperTexture3;
-    private TextureRegion paperTexture4;
-    private TextureRegion paperTexture5;
-    private TextureRegion paperTexture6;
-    private TextureRegion paperTexture7;
-    private TextureRegion paperTexture8;
-    private TextureRegion paperTexture9;
-
-
-    private int paperTextureHeight;
-    private int paperTextureWidth;
-
-
     /** Jumping variables**/
     private boolean isClicked = false;
     private long pressTime = 0l;
@@ -116,12 +97,6 @@ public class WorldRenderer implements InputProcessor{
     private long timer1 = 0l;
     private long timer2 = 0l;
     private long timer3 = 0l;
-
-
-    /** Textures **/
-    private Texture bobTexture;
-    private Texture bobTexture2;
-    private Texture blockTexture;
 
     private SpriteBatch spriteBatch;
     private boolean debug = true;
@@ -163,7 +138,6 @@ public class WorldRenderer implements InputProcessor{
         debug = true;
         spriteBatch = new SpriteBatch();
         spriteBatchObstacle = new SpriteBatch();
-        loadTextures();
         player = new Player();
         loadPlayerTextures();
         Gdx.input.setInputProcessor(this);
@@ -174,17 +148,6 @@ public class WorldRenderer implements InputProcessor{
         player.setWidth(UNIT_SCALE * playerIdleRight.getRegionWidth());
         player.setHeight(UNIT_SCALE * playerIdleRight.getRegionHeight());
 
-        loadObstacleTexture();
-        int pwidth = paperTexture1.getRegionWidth()/100;
-        paperTexture1.setRegionWidth(pwidth);
-        System.out.println("paper : " + paperTexture1.getRegionWidth());
-        int pheight = paperTexture1.getRegionHeight()/100;
-        paperTexture1.setRegionHeight(pheight);
-        System.out.println("paper : " + paperTexture1.getRegionHeight());
-        paperTextureHeight = paperTexture1.getRegionHeight();
-        paperTextureWidth = paperTexture1.getRegionWidth();
-
-
         score = 0 ;
 
         // set the first timer for the change of mode
@@ -192,22 +155,13 @@ public class WorldRenderer implements InputProcessor{
         timerFly = 2;
     }
 
-    private void loadTextures() {
-        bobTexture = new  Texture(Gdx.files.internal("images/rect.jpg"));
-        bobTexture2 = new  Texture(Gdx.files.internal("images/rect.jpg"));
-     //   blockTexture = new Texture(Gdx.files.internal("images/block.png"));
-    }
-
-
-
-
     public void render(float delta) {
 
         Gdx.gl.glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
-        obstacleSelect = 3;
-      //  obstacleSelect = random.nextInt(Obstacle.numberObstale)+1;
+        obstacleSelect = 4;
+        //obstacleSelect = random.nextInt(Obstacle.numberObstale)+1;
       //  System.out.println("obstacle number " + obstacleSelect);
 
         if ( finishTour) {
@@ -235,6 +189,7 @@ public class WorldRenderer implements InputProcessor{
                 case 4 :
                     obstacle.getPosition().x = OUT_RANGE_X;
                     obstacle2.getPosition().x = OUT_RANGE_X;
+                    obstacle2.setHeight(Obstacle.OBSTACLE17_HEIGHT);
                     obstacle.setHeight(Obstacle.OBSTACLE14_HEIGHT);
                     obstacle2.setY(obstacle.getPosition().y +Obstacle.OBSTACLE14_HEIGHT +  Obstacle.HOLE);
                     break;
@@ -273,7 +228,7 @@ public class WorldRenderer implements InputProcessor{
         }
         collisionDetection();
 
-       // spriteBatchObstacle.begin();
+        spriteBatchObstacle.begin();
         spriteBatch.begin();
         updateObstable();
         if (flyBackgroundEnter){
@@ -285,13 +240,14 @@ public class WorldRenderer implements InputProcessor{
                 //timerFly = random.nextInt(maxTimerFly) + minTimerFly;
                 timerFly = 2;
             }
-            System.out.println("in fly bacground, timerFly :  " + timerFly +", counterinfly :" +minTimerFly );
+        } else {
+            drawBackground(Assets.background2tr);
         }
 
         drawPlayer();
         drawBob();
         spriteBatch.end();
-       // spriteBatchObstacle.end();
+        spriteBatchObstacle.end();
         updatePlayer(delta);
         player.update(delta);
 
@@ -303,13 +259,10 @@ public class WorldRenderer implements InputProcessor{
         if (Gdx.input.isTouched() && player.isGrounded()) {
             if (currentTime < timer1){
                 player.setState(Player.State.Falling);
-                //System.out.println("fall");
             } else if (currentTime >= timer1 && currentTime < timer2){
                 player.setState(Player.State.Falling1);
-                //System.out.println("fall1");
             } else if (currentTime >= timer2 && currentTime < timer3){
                 player.setState(Player.State.Falling2);
-                //System.out.println("fall2");
             }
         }
 
@@ -325,8 +278,6 @@ public class WorldRenderer implements InputProcessor{
                 player.setState(Player.State.Jumping3);
             }
         }
-
-        //System.out.println(player.getState());
 
     }
 
@@ -374,17 +325,6 @@ public class WorldRenderer implements InputProcessor{
         Rectangle playerRect = rectPool.obtain();
         playerRect.set(player.getPosition().x, player.getPosition().y + player.getHeight()*0.1f, player.getWidth(), player.getHeight());
 
-        int startX, startY, endX, endY;
-        if (player.getVelocity().x > 0) {
-            startX = endX = (int)(player.getPosition().x + player.getWidth() + player.getVelocity().x);
-        } else {
-            startX = endX = (int)(player.getPosition().x + player.getVelocity().x);
-        }
-
-        startY = (int)(player.getPosition().y);
-        endY = (int)(player.getPosition().y + player.getHeight());
-        getTiles(startX, startY, endX, endY, tiles);
-
         playerRect.x += player.getVelocity().x;
 
         if(tiles != null) {
@@ -405,20 +345,8 @@ public class WorldRenderer implements InputProcessor{
             }
         }
 
-        //playerRect.x = player.getPosition().x;
         playerRect.set(player.getPosition().x, player.getPosition().y, player.getWidth(), player.getHeight());
 
-        // if the koala is moving upwards, check the tiles to the top of it's
-        // top bounding box edge, otherwise check the ones to the bottom
-        if (player.getVelocity().y > 0) {
-            startY = endY = (int)(player.getPosition().y + player.getHeight() + player.getVelocity().y);
-        } else {
-            startY = endY = (int)(player.getPosition().y + player.getVelocity().y);
-        }
-
-        startX = (int)(player.getPosition().x);
-        endX = (int)(player.getPosition().x + player.getWidth());
-        getTiles(startX, startY, endX, endY, tiles);
         playerRect.y += player.getVelocity().y;
         if(tiles != null) {
             for (Rectangle tile : tiles) {
@@ -452,12 +380,6 @@ public class WorldRenderer implements InputProcessor{
 
         player.getVelocity().x *= Player.DAMPING;
     }
-
-
-    private void getTiles (int startX, int startY, int endX, int endY, Array<Rectangle> tiles) {
-
-    }
-
 
     // Modifie la position de l'obstacle, sa vitesse et tourne en boucle et le background
     public void updateObstable(){
@@ -496,46 +418,21 @@ public class WorldRenderer implements InputProcessor{
     }
 
     public void collisionDetection(){
-        //System.out.println(player.getPosition().x);
-
-        float topObstacle1 = (obstacle.getPosition().x) + (Obstacle.SIZEWIDTH);
-
-        //System.out.println(topObstacle1);
-        float bottomObstacle2 = (obstacle2.getPosition().y);
-        //System.out.println( "player " +player.getPosition().y);
-        //System.out.println("obstacle 2 " +bottomObstacle2);
-        //System.out.println("obstacle " + topObstacle1);
-        //System.out.println(collide);
-        //System.out.println();
-        /*if ( !(((player.getPosition().y)> (topObstacle1)) && ((player.getPosition().y) < (bottomObstacle2) ) )) {
-            if ((player.getPosition().x >(obstacle.getPosition().x - com.mygdx.game.model.Ground.SIZE) )) {
-                if (player.isGrounded()) {
-                    player.setPosition(new Vector2((float) (obstacle.getPosition().x - com.mygdx.game.model.Ground.SIZE), (float) (player.getPosition().y)));
-                    collide = true;
-                }
-                //  System.out.println("enter collision " );
-            }
-        }*/
 
         if ((player.getPosition().x >= (obstacle.getPosition().x - player.getWidth())
                 && player.getPosition().x < (obstacle.getPosition().x + Obstacle.SIZEWIDTH)
                 && player.getPosition().y >= obstacle.getPosition().y
                 && (player.getPosition().y) < (obstacle.getBounds().getHeight() + obstacle.getPosition().y))
 
-                /*|| (player.getPosition().x >= (obstacle2.getPosition().x - player.getWidth())
+                || (player.getPosition().x >= (obstacle2.getPosition().x - player.getWidth())
                 && player.getPosition().x <= (obstacle2.getPosition().x + obstacle2.getBounds().getWidth())
-                && (player.getPosition().y + player.getHeight())>= obstacle2.getPosition().y)*/){
+                && (player.getPosition().y + player.getHeight())>= obstacle2.getPosition().y)){
 
             player.setPosition(new Vector2((float) (player.getPosition().x), (float) (player.getPosition().y)));
             player.setState(Player.State.Crying);
             collide = true;
-            //System.out.println("Joueur x= " + (player.getPosition().x + player.getWidth()) + "  y= " + player.getPosition().y);
-            //System.out.println("Cube x= " + obstacle.getPosition().x + "  y= " + obstacle.getPosition().y );
-
-
         }
         else {
-            //System.out.println("didnt enter collision");
             collide = false;
         }
     }
@@ -544,50 +441,39 @@ public class WorldRenderer implements InputProcessor{
         spriteBatch.draw(background, 0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
     }
 
-    // En gros tout le principe des obstacle est encore en place, juste quon rajoute une couche par dessus pour dessiner le pq
-    // la jetais reparties sur deux image, mais ya une fonction pour le fichier pack quaond on avais tout ensemble elle sappelle loadObstacleTexture
-    // javais eu des problemes d'unit et tt, genre quand on prenais les size width et height directement des texuture, il faut que tu fasse gaffe,
-    // essaye de print les size et tt si tas des doutes, mais normalement le size standart ca doit etre entre 1 et 10 un truc comme ca et multipluer par ppux et ppuy
-    private void drawBob() {
+   private void drawBob() {
+
         switch (obstacleSelect) {
             case 1 :
                 spriteBatch.draw(Assets.obstacleBackground11, obstacle.getPosition().x * ppuX, obstacle.getPosition().y * ppuY, obstacle.getBounds().width * ppuX, obstacle.getBounds().height * ppuY);// obstacle.getBounds().width, obstacle.getBounds().height);
-                spriteBatch.draw(Assets.obstacleBackground17, obstacle2.getPosition().x * ppuX, obstacle2.getPosition().y * ppuY, obstacle2.getBounds().width, obstacle2.getBounds().height);
-                System.out.println("ppuX : " + obstacle.getBounds().width*ppuX);
-                System.out.println("ppuY : " + ppuY);
+                //spriteBatch.draw(Assets.obstacleBackground17, obstacle2.getPosition().x * ppuX, obstacle2.getPosition().y * ppuY, obstacle2.getBounds().width, obstacle2.getBounds().height);
                 break;
             case 2 :
                 spriteBatch.draw(Assets.obstacleBackground12, obstacle.getPosition().x * ppuX, obstacle.getPosition().y * ppuY, obstacle.getBounds().width * ppuX, obstacle.getBounds().height * ppuY);
              //   spriteBatch.draw(Assets.obstacleBackground17, obstacle2.getPosition().x * ppuX, obstacle2.getPosition().y * ppuY, obstacle2.getBounds().width, obstacle2.getBounds().height);
                 break;
-            case 3:
-              /*  int h = (int)((paperTexture2.getRegionHeight()/100) * ppuY);
-                int w = (int)((paperTexture2.getRegionWidth()/100) * ppuX);
-                paperTexture2.setRegionHeight(paperTextureHeight);
-                paperTexture2.setRegionWidth(paperTextureHeight);
-                spriteBatch.draw(paperTexture2, obstacle.getPosition().x * ppuX, obstacle.getPosition().y * ppuY, paperTextureWidth*ppuX, paperTextureHeight*ppuY);
-*/
-              //  spriteBatch.draw(paperTexture2, obstacle.getPosition().x * ppuX, obstacle.getPosition().y * ppuY);
-                spriteBatch.draw(Assets.obstacleBackground12, (obstacle.getPosition().x - Obstacle.textureFillParameterX) * ppuX, (obstacle.getPosition().y - Obstacle.textureFillParameterY) * ppuY, (obstacle.getBounds().width + Obstacle.textureFillParameterWidth) * ppuX, (obstacle.getBounds().height + Obstacle.textureFillParameterHeight) * ppuY);
-                debugRenderer.begin(ShapeRenderer.ShapeType.Line);
-                debugRenderer.rect(obstacle.getPosition().x * ppuX, obstacle.getPosition().y * ppuY, paperTexture2.getRegionWidth(), paperTexture2.getRegionHeight());
-                debugRenderer.end();
+            case 3 :
+                spriteBatch.draw(Assets.obstacleBackground13, obstacle.getPosition().x * ppuX, obstacle.getPosition().y * ppuY, obstacle.getBounds().width * ppuX, obstacle.getBounds().height * ppuY);
+                /*debugRenderer.begin(ShapeRenderer.ShapeType.Line);
+                debugRenderer.rect(obstacle.getPosition().x * ppuX, obstacle.getPosition().y * ppuY, obstacle.getBounds().width * ppuX, obstacle.getBounds().height * ppuY);
+                debugRenderer.end();*/
              //  System.out.println("papaer width : " + paperTextureWidth +" height : " + paperTextureHeight);
                 break;
             case 4 :
-                //spriteBatch.draw(Assets.obstacleBackground14, obstacle.getPosition().x * ppuX, obstacle.getPosition().y * ppuY, obstacle.getBounds().width, obstacle.getBounds().height);
-                spriteBatch.draw(Assets.obstacleBackground17, obstacle2.getPosition().x * ppuX, obstacle2.getPosition().y * ppuY, obstacle2.getBounds().width, obstacle2.getBounds().height);
+                spriteBatch.draw(Assets.obstacleBackground14, obstacle.getPosition().x * ppuX, obstacle.getPosition().y * ppuY, obstacle.getBounds().width * ppuX, obstacle.getBounds().height * ppuY);
+                spriteBatch.draw(Assets.obstacleBackground17, obstacle2.getPosition().x * ppuX, obstacle2.getPosition().y * ppuY, obstacle2.getBounds().width * ppuX, obstacle2.getBounds().height * ppuY);
                 break;
             case 5 :
-                //spriteBatch.draw(Assets.obstacleBackground15, obstacle.getPosition().x * ppuX, obstacle.getPosition().y * ppuY, obstacle.getBounds().width, obstacle.getBounds().height );
-                spriteBatch.draw(Assets.obstacleBackground17, obstacle2.getPosition().x * ppuX, obstacle2.getPosition().y * ppuY, obstacle2.getBounds().width, obstacle2.getBounds().height);
-
+                spriteBatch.draw(Assets.obstacleBackground15, obstacle.getPosition().x * ppuX, obstacle.getPosition().y * ppuY, obstacle.getBounds().width * ppuX, obstacle.getBounds().height * ppuY);
+                //spriteBatch.draw(Assets.obstacleBackground17, obstacle2.getPosition().x * ppuX, obstacle2.getPosition().y * ppuY, obstacle2.getBounds().width, obstacle2.getBounds().height);
                 break;
             case 8:
                 spriteBatch.draw(Assets.obstacleBackground16, obstacle.getPosition().x * ppuX, obstacle.getPosition().y * ppuY, obstacle.getBounds().width, obstacle.getBounds().height);
                 //spriteBatch.draw(Assets.obstacleBackground17, obstacle2.getPosition().x * ppuX, obstacle2.getPosition().y * ppuY, obstacle2.getBounds().width,obstacle2.getBounds().height);
                 break;
         }
+        //spriteBatch.draw(Assets.obstacleBackground16, obstacle.getPosition().x * ppuX, obstacle.getPosition().y * ppuY, obstacle.getBounds().width * ppuX, obstacle.getBounds().height * ppuY);// obstacle.getBounds().width, obstacle.getBounds().height);
+
     }
 
 
@@ -617,20 +503,6 @@ public class WorldRenderer implements InputProcessor{
 
     }
 
-
-    public void loadObstacleTexture(){
-        TextureAtlas atlasObs = new TextureAtlas(Gdx.files.internal("paper.pack"));
-        paperTexture1 = atlasObs.findRegion("paper1");
-        paperTexture2 = atlasObs.findRegion("paper2");
-        paperTexture3 = atlasObs.findRegion("paper3");
-        paperTexture4 = atlasObs.findRegion("paper4");
-        paperTexture5 = atlasObs.findRegion("paper5");
-        paperTexture6 = atlasObs.findRegion("paper6");
-        paperTexture7 = atlasObs.findRegion("paper7");
-        paperTexture8 = atlasObs.findRegion("paper8");
-        paperTexture9 = atlasObs.findRegion("paper9");
-
-    }
 
     public void drawPlayer(){
 

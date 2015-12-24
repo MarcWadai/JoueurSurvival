@@ -18,6 +18,7 @@ public class Assets {
 
     public static Texture items;
     public static Texture menu;
+    public static Texture background2;
     public static Texture toilet1;
     public static Texture toilet2;
     public static Texture toilet3;
@@ -40,6 +41,7 @@ public class Assets {
     public static TextureRegion gameOver;
     public static TextureRegion highScores;
     public static TextureRegion background;
+    public static TextureRegion background2tr;
     public static TextureRegion play;
     public static TextureRegion settings;
 
@@ -54,17 +56,18 @@ public class Assets {
 
         items = loadTexture("images/items.png");
         menu = loadTexture("images/menu.png");
+        background2 = loadTexture("images/bckgrnd2.png");
         toilet1 = loadTexture("images/play.png");
         toilet2 = loadTexture("images/scores.png");
         toilet3 = loadTexture("images/settings.png");
 
-        obstacleBackground11 = loadTexture("images/paper/paper.png");
-        obstacleBackground12 = loadTexture("images/paper/paper2.png");
-        obstacleBackground13 = loadTexture("images/paper/paper3.png");
-        obstacleBackground14 = loadTexture("images/paper/paper4.png");
-        obstacleBackground15 = loadTexture("images/paper/paper5.png");
-        obstacleBackground16 = loadTexture("images/paper/paper6.png");
-        obstacleBackground17 = loadTexture("images/paper/paper7.png");
+        obstacleBackground11 = loadTexture("images/paper/clean_paper.png");
+        obstacleBackground12 = loadTexture("images/paper/clean_paper2.png");
+        obstacleBackground13 = loadTexture("images/paper/clean_paper3.png");
+        obstacleBackground14 = loadTexture("images/paper/clean_paper4.png");
+        obstacleBackground15 = loadTexture("images/paper/clean_paper5.png");
+        obstacleBackground16 = loadTexture("images/paper/clean_paper6.png");
+        obstacleBackground17 = loadTexture("images/paper/clean_paper7.png");
 
        // backgroundGame = loadTexture("images/")
         mainMenu = new TextureRegion(items, 0, 224, 300, 110);
@@ -72,6 +75,8 @@ public class Assets {
         gameOver = new TextureRegion(items, 352, 256, 160, 96);
         pause = new TextureRegion(items, 64, 64, 64, 64);
         background = new TextureRegion(menu, 0, 0, MENU_WIDTH, MENU_HEIGHT);
+        background2tr = new TextureRegion(background2, 0, 0, MENU_WIDTH, MENU_HEIGHT);
+
         play = new TextureRegion(toilet1, 0, 0, PLAY_WIDTH, PLAY_HEIGHT);
         highScores = new TextureRegion(toilet2, 0, 0, PLAY_WIDTH, PLAY_HEIGHT);
         settings = new TextureRegion(toilet3, 0, 0, PLAY_WIDTH, PLAY_HEIGHT);

@@ -28,7 +28,7 @@ public class Obstacle {
         public static final float SIZEHEIGHT2 = 6f; // half a unit
         public static final float SIZEWIDTH2 = 0.5f;
 
-        public final static float HOLE = 3f;
+        public final static float HOLE = 3.5f;
 
         public static final float OBSTACLE11_HEIGHT = Assets.obstacleBackground11.getHeight()/100f;
         public static final float OBSTACLE12_HEIGHT = Assets.obstacleBackground12.getHeight()/100f;
