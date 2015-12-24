@@ -43,7 +43,7 @@ public class Obstacle {
 
 
 
-
+        private float hole = 3.5f;
 
         private Vector2 position = new Vector2();
         private Rectangle bounds = new Rectangle();
@@ -81,5 +81,13 @@ public class Obstacle {
 
         public void setObstacleTexture(Texture texture){
             obstacleTexture = texture;
+        }
+
+        public float getHole() {
+            return this.hole;
+        }
+
+        public void setHole(float hole) {
+            this.hole = hole;
         }
     }

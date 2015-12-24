@@ -6,11 +6,11 @@ import com.badlogic.gdx.math.Vector2;
  * Created by TRINH on 02/10/15.
  */
 public class Player {
-    public static final float MAX_VELOCITY = 20f; //1
+    public static final float MAX_VELOCITY = 30f; //20
     public static final float JUMP_VELOCITY = 20f;
     public static final float DAMPING = 0.87f;
-    public static final float GRAVITY = -5.0f; //-5      g13 s10 depasse pas
-    public static final float MAX_JUMP_SPEED   = 6.2f;//10
+    public static final float GRAVITY = -5.2f; //-5      g13 s10 depasse pas
+    public static final float MAX_JUMP_SPEED   = 6.3f;//10
 
     public enum State {
         Standing, Walking, Jumping, Jumping1, Jumping2, Jumping3, Falling, Falling1, Falling2, Crying
