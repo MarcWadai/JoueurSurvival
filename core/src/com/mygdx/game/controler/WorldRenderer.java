@@ -35,6 +35,7 @@ public class WorldRenderer implements InputProcessor{
     private static final float SPEED_OBSTACLE = 2;
     private static final float MOVING_RANGE = 5f;//0.085f;//0.07f;
     private final static  float OUT_RANGE_X = 9;
+    private final static  float OUT_RANGE_X_FLY = 11;
     private static final float UNIT_SCALE = 1/400f;
     private static final long MAX_TIME_PRESS = 1000;
     private static final long MIN_TIME_PRESS = 200;
@@ -51,9 +52,9 @@ public class WorldRenderer implements InputProcessor{
     private OrthographicCamera cam;
 
     /**  Boolean and variables to change the background based on the game mode **/
-    private int minTimerFly = 1;
-    private int maxTimerFly = 1;
-    private int timerFly = 0;
+    private int minTimerFly = 2;
+    private int maxTimerFly = 4;
+    private int timerFly = 2;
     private int counterFly = 0;
     private int counterInFly = 0;
     private int timerInterGroundFly = 10;
@@ -106,7 +107,8 @@ public class WorldRenderer implements InputProcessor{
     private float ppuX;	// pixels per unit on the X axis
     private float ppuY;	// pixels per unit on the Y axis
     private float obstacle2Y;
-
+    private int backgroundBlink;
+    private int backgroundBlinkDuration = 40;
 
 
     public void setSize (int w, int h) {
@@ -148,12 +150,13 @@ public class WorldRenderer implements InputProcessor{
         player.setPosition(new Vector2(1, Ground.SIZE));
         player.setWidth(UNIT_SCALE * playerIdleRight.getRegionWidth());
         player.setHeight(UNIT_SCALE * playerIdleRight.getRegionHeight());
-        player.setPosition(new Vector2(player.getPosition().x, 10));
+        player.setPosition(new Vector2(player.getPosition().x, 0));
         score = 0 ;
 
-        // set the first timer for the change of mode
-       // timerFly = random.nextInt(maxTimerFly) + minTimerFly;
-        timerFly = 2;
+        // set the first timer for the change of mode, the timer initialize the number of round it has to stayin fly mode
+        //timerFly = random.nextInt(maxTimerFly) + minTimerFly;
+
+        backgroundBlink = 0;
     }
 
     public void render(float delta) {
@@ -168,61 +171,55 @@ public class WorldRenderer implements InputProcessor{
             obstacleSelect = random.nextInt(Obstacle.numberObstale) +1;
             switch (obstacleSelect){
                 case 1 :
-                    obstacle.getPosition().x = OUT_RANGE_X;
-                    obstacle2.getPosition().x = OUT_RANGE_X;
+
                     obstacle.setHeight(Obstacle.OBSTACLE11_HEIGHT);
                     obstacle2.setHeight(Obstacle.OBSTACLE17_HEIGHT);
                     obstacle2.setY(obstacle.getPosition().y + Obstacle.OBSTACLE11_HEIGHT +  obstacle2.getHole());
                     break;
                 case 2 :
-                    obstacle.getPosition().x = OUT_RANGE_X;
-                    obstacle2.getPosition().x = OUT_RANGE_X;
                     obstacle.setHeight(Obstacle.OBSTACLE12_HEIGHT);
                     obstacle2.setHeight(Obstacle.OBSTACLE17_HEIGHT);
                     obstacle2.setY(obstacle.getPosition().y +Obstacle.OBSTACLE12_HEIGHT +  obstacle2.getHole());
                     break;
                 case 3 :
-                    obstacle.getPosition().x = OUT_RANGE_X;
-                    obstacle2.getPosition().x = OUT_RANGE_X;
                     obstacle.setHeight(Obstacle.OBSTACLE13_HEIGHT);
                     obstacle2.setHeight(Obstacle.OBSTACLE17_HEIGHT);
                     obstacle2.setY(obstacle.getPosition().y + Obstacle.OBSTACLE13_HEIGHT + obstacle2.getHole());
                     break;
 
                 case 4 :
-                    obstacle.getPosition().x = OUT_RANGE_X;
-                    obstacle2.getPosition().x = OUT_RANGE_X;
                     obstacle2.setHeight(Obstacle.OBSTACLE17_HEIGHT);
                     obstacle.setHeight(Obstacle.OBSTACLE14_HEIGHT);
                     obstacle2.setY(obstacle.getPosition().y +Obstacle.OBSTACLE14_HEIGHT + obstacle2.getHole());
                     break;
                 case 5 :
-                    obstacle.getPosition().x = OUT_RANGE_X;
-                    obstacle2.getPosition().x = OUT_RANGE_X;
+
                     obstacle.setHeight(Obstacle.OBSTACLE15_HEIGHT);
                     obstacle2.setHeight(Obstacle.OBSTACLE17_HEIGHT);
                     obstacle2.setY(obstacle.getPosition().y + Obstacle.OBSTACLE15_HEIGHT + obstacle2.getHole());
                     break;
                 case 6 :
-                    obstacle.getPosition().x = OUT_RANGE_X;
-                    obstacle2.getPosition().x = OUT_RANGE_X;
+
                     obstacle.setHeight(Obstacle.OBSTACLE16_HEIGHT);
                     obstacle2.setHeight(Obstacle.OBSTACLE17_HEIGHT);
                     obstacle2.setY(obstacle.getPosition().y +Obstacle.OBSTACLE16_HEIGHT+  obstacle2.getHole());
                     break;
                 case 7 :
-                    obstacle.getPosition().x = OUT_RANGE_X;
-                    obstacle2.getPosition().x = OUT_RANGE_X;
                     obstacle.setHeight(Obstacle.OBSTACLE17_HEIGHT);
                     obstacle2.setHeight(Obstacle.OBSTACLE17_HEIGHT);
                     obstacle2.setY(obstacle.getPosition().y +Obstacle.OBSTACLE17_HEIGHT+  obstacle2.getHole());
                     break;
                 case 8 :
-                    obstacle.getPosition().x = OUT_RANGE_X;
-                    obstacle2.getPosition().x = OUT_RANGE_X;
                     obstacle.setHeight(Obstacle.OBSTACLE11_HEIGHT);
                     obstacle2.setY(obstacle.getPosition().y +Obstacle.OBSTACLE17_HEIGHT +  3*obstacle2.getHole());
                     break;
+            }
+            if(flyBackgroundEnter){
+                obstacle2.getPosition().x = OUT_RANGE_X_FLY;
+                obstacle.getPosition().x = OUT_RANGE_X_FLY;
+            }else{
+                obstacle2.getPosition().x = OUT_RANGE_X;
+                obstacle.getPosition().x = OUT_RANGE_X;
             }
 
             score++;
@@ -238,20 +235,35 @@ public class WorldRenderer implements InputProcessor{
         spriteBatch.begin();
 
         if (flyBackgroundEnter){
+            if(backgroundBlink < backgroundBlinkDuration){
+                if (backgroundBlink%3 == 0){
+                    drawBackground(Assets.background);
+                }
+                else{
+                    Gdx.gl.glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+                    Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+                }
+                backgroundBlink ++;
+            }else{
+                drawBackground(Assets.background2tr);
+
+                if (counterInFly == timerFly){
+                    flyBackgroundEnter = false;
+                    counterInFly = 0;
+                    counterFly = 0;
+                    timerFly = random.nextInt(maxTimerFly) + minTimerFly;
+                    System.out.println(" timerfly  :" + timerFly);
+                  //  timerFly = 3;
+                }
+            }
+            firstBackground = true;
+            obstacle2.setHole(2.5f);
+        } else {
+            backgroundBlink = 0;
             drawBackground(Assets.background);
             firstBackground = false;
             obstacle2.setHole(3.5f);
-            if (counterInFly == timerFly){
-                flyBackgroundEnter = false;
-                counterInFly = 0;
-                counterFly = 0;
-                //timerFly = random.nextInt(maxTimerFly) + minTimerFly;
-                timerFly = 2;
-            }
-        } else {
-            drawBackground(Assets.background2tr);
-            firstBackground = true;
-            obstacle2.setHole(2.5f);
+
         }
         drawBob();
         updateObstable();
@@ -395,9 +407,8 @@ public class WorldRenderer implements InputProcessor{
 
     // Modifie la position de l'obstacle, sa vitesse et tourne en boucle et le background
     public void updateObstable(){
-
         if ( !(obstacle.getPosition().x < 0 && collide)) {
-            if (obstacle.getPosition().x < 0) {
+            if (obstacle.getPosition().x < -1) {
                 obstacle.getPosition().x = OUT_RANGE_X;
                 obstacle2.getPosition().x = OUT_RANGE_X;
                 finishTour = true;
@@ -406,10 +417,12 @@ public class WorldRenderer implements InputProcessor{
                 // si le counterfly atteint la valeur de timerfly on pass le booleen a vrai et on va changer le background pendant une certaine durée
                 if (counterFly == timerFly){
                     flyBackgroundEnter = true;
+                    player.setPosition(new Vector2(player.getPosition().x, 10));
+                    System.out.println("not flying timerFly :  " + timerFly + ", counterfly :" + counterFly);
                 }
                 if (flyBackgroundEnter){
                     counterInFly ++;
-                    System.out.println("in fly bacground, timerFly :  " + timerFly +", counterinfly :" +minTimerFly );
+                    System.out.println("in fly bacground, timerFly :  " + timerFly +", counterinfly :" +counterInFly );
                 }
 
             }

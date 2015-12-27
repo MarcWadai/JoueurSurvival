@@ -70,6 +70,7 @@ public class MainScreen extends ScreenAdapter{
             if (highscoresBounds.contains(touchPoint.x, touchPoint.y)) {
                // Assets.playSound(Assets.clickSound);
               //  game.setScreen(new HighscoresScreen(game));
+                game.setScreen(new HighScoreScreen(game));
                 System.out.println("Highscore");
                 return;
             }
@@ -104,6 +105,8 @@ public class MainScreen extends ScreenAdapter{
     @Override
     public void render (float delta) {
         super.render(delta);
+        Gdx.gl.glClearColor(0f, 0f, 0f, 1);
+        Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
         update();
         draw();
     }
